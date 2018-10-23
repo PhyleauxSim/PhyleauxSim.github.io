@@ -1,0 +1,127 @@
+<html>
+  <head>
+    <title>Phylo Example</title>
+    <link rel=stylesheet href=proto-style.css>
+    <script src=proto-script.js></script>
+    <!-- d3 library for data visualization and animation -->
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+
+    <!-- jstat library for probability distributions -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
+
+    <!-- phyleaux library for phylogenetic objects and functions -->
+    <script type="text/javascript" src="https://jembrown.github.io/phyleaux.js"></script>
+  </head>
+  <body>
+    <div class='title'>
+      <h1>Coalescent Histories In a Population</h1>
+    </div>
+
+    <div class='example1 section'>
+      <div id="controls" class="in half">
+        <span>
+          <p>Population Size: </p><input id="popSize" type="number"></input><br>
+        </span>
+        <span>
+          <p>Sample Size: </p><input id="sampleSize" type="number"></input>
+        </span>
+        <span>
+          <p>Number of Generations: </p><input id="numGenerations" type="number"></input>
+        </span>
+        <span>
+          <button id="redraw" onclick="redraw();">Redraw</button>
+        </span>
+      </div>
+      <div class="out half">
+        <span id = "visualization">
+			      <script>
+
+    				// Setting coalescent defaults
+    				var popSize = 10;
+    				var nGens = 20;
+    				var sampleSize = 5;
+
+    				// Setting plotting defaults
+    				var svgWidth = 0.45 * window.innerWidth;
+    				var svgHeight = 0.85 * window.innerHeight;
+    				var padding = 15;
+
+    				// Adding defaults to input text boxes
+    				d3.select("#popSize").property("value",popSize);
+    				d3.select("#sampleSize").property("value",sampleSize);
+    				d3.select("#numGenerations").property("value",nGens);
+
+    				function doTheCoalescent(){
+
+    					d3.selectAll("svg").remove();
+
+    					popSize = parseInt(d3.select("#popSize").property("value"));
+    					nGens = parseInt(d3.select("#numGenerations").property("value"));
+    					sampleSize = parseInt(d3.select("#sampleSize").property("value"));
+
+    					var myCoalHist = new coalescentHistory(popSize,
+    														   nGens,
+    														   sampleSize);
+
+    					myCoalHist.sampleHistory();
+
+    					//svgWidth = popSize * 45;
+    					//svgHeight = nGens * 30;
+
+    					myCoalHist.drawSortedHistory(svgWidth,svgHeight,padding,"#visualization");
+    				}
+
+    				doTheCoalescent();
+
+    				// The next 3 event listeners just keep the text forms from reverting
+    				// to default values when the user presses enter.
+
+    				var popSizeForm = document.getElementById("popSize");
+    				popSizeForm.addEventListener("submit",function(event){
+    					event.preventDefault();
+    				});
+
+    				var sampSizeForm = document.getElementById("sampleSize");
+    				sampSizeForm.addEventListener("submit",function(event){
+    					event.preventDefault();
+    				});
+
+    				var numGensForm = document.getElementById("numGenerations");
+    				numGensForm.addEventListener("submit",function(event){
+    					event.preventDefault();
+    				});
+
+    				function redraw(){
+    				  		if (sampleSize > popSize){
+    				  			alert("Sample size cannot be greater than the population size.")
+    				  		} else {
+    				  			doTheCoalescent();
+    				  		}
+    				  }
+
+    			</script>
+     		</span>
+      </div>
+    </div>
+
+    <div class='example2 section'>
+      <div class="in half">
+      </div>
+      <div id="live" class="out half">
+        <script>createLive()</script>
+      </div>
+    </div>
+
+    <div class='example3 section'>
+      <div class="in half">
+      </div>
+      <div class="out half">
+      </div>
+    </div>
+
+    <footer>
+      info about sponsors and libraries
+    </footer>
+
+  </body>
+</html>
