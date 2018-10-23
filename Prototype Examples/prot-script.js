@@ -1,16 +1,15 @@
 var shapes = ["polygon","rect","circle"];
-
-function createLive(){
+var coalescents = [];
+/*
+*Creates a svg inside of an object with id 'live'.
+*/
+function createLive(where){
   var coalSVG = document.createElement("svg");
   coalSVG.style.width = "100%";
   coalSVG.style.height = "100%";
-  coalSVG.id = "coalSVG";
-  document.getElementById("live").append(coalSVG);
-
-  for(var i = 0;i < 10;i++){
-    var obj = new species();
-    obj.show();
-  }
+  coalSVG.id = "coalSVG" + coalescents.length;
+  coalescents.push(coalSVG);
+  document.getElementById(where).append(coalSVG);
 }
 
 /*
