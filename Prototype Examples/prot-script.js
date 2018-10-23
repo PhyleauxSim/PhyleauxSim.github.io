@@ -1,7 +1,13 @@
+/*
+*Shapes array is an array of all possible shapes for species object.
+*Coalescents array is an array of all live coalescent objects.
+*/
 var shapes = ["polygon","rect","circle"];
 var coalescents = [];
-/*
+
+/**
 *Creates a svg inside of an object with id 'live'.
+* @param  {element} where HTML element
 */
 function createLive(where){
   var coalSVG = document.createElement("svg");
@@ -12,7 +18,7 @@ function createLive(where){
   document.getElementById(where).append(coalSVG);
 }
 
-/*
+/**
 *Class that holds the atributes for a species object.
 *Shape variable represents 1 out of the possible shapes in the shapes array.
 *Color variable represents color of the pecies object.
@@ -24,11 +30,12 @@ class atributes{
   }
 }
 
-/*
+/**
 *Generic class for parent child structure.
 *Parent object is another species object that is before this object in the tree.
 *Children array is filled with species objects that come after this object in
 the tree.
+* @param  {object} parent species object
 */
 class species{
   constructor(parent){
