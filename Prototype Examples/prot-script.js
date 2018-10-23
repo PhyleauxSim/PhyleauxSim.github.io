@@ -7,7 +7,7 @@ var coalescents = [];
 
 /**
 *Creates a svg inside of an object with id 'live'.
-* @param  {element} where HTML element
+* @param {element} where HTML element
 */
 function createLive(where){
   var coalSVG = document.createElement("svg");
@@ -35,7 +35,7 @@ class atributes{
 *Parent object is another species object that is before this object in the tree.
 *Children array is filled with species objects that come after this object in
 the tree.
-* @param  {object} parent species object
+* @param {object} parent species object
 */
 class species{
   constructor(parent){
@@ -46,10 +46,6 @@ class species{
       this.atributes = new atributes();
     }else{
       this.atributes = this.parent.atributes;
-    }
-
-    this.show = function(){
-
     }
   }
 }
