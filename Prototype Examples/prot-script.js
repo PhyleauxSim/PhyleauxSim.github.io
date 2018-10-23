@@ -1,8 +1,4 @@
-var shapes = ["polygon","rect","circle"]
-function setup(){
-
-  console.log("Setup Complete");
-}
+var shapes = ["polygon","rect","circle"];
 
 function createLive(){
   var coalSVG = document.createElement("svg");
@@ -17,6 +13,11 @@ function createLive(){
   }
 }
 
+/*
+*Class that holds the atributes for a species object.
+*Shape variable represents 1 out of the possible shapes in the shapes array.
+*Color variable represents color of the pecies object.
+*/
 class atributes{
   constructor(){
     this.shape = Math.floor(3*Math.random());
@@ -24,9 +25,16 @@ class atributes{
   }
 }
 
+/*
+*Generic class for parent child structure.
+*Parent object is another species object that is before this object in the tree.
+*Children array is filled with species objects that come after this object in
+the tree.
+*/
 class species{
   constructor(parent){
     this.parent = parent;
+    this.children = [];
 
     if (parent == undefined){
       this.atributes = new atributes();
@@ -35,12 +43,7 @@ class species{
     }
 
     this.show = function(){
-      var ele = document.createElement(shapes[this.atributes.shape]);
-      if(this.atributes.shape == 3){
-        coalSVG.append(shapes[this.atributes.shape]).attr('cx',100*Math.random()).attr('cy',100*Math.random());
-      }else{
-        coalSVG.append(shapes[this.atributes.shape]).attr('x',100*Math.random()).attr('y',100*Math.random());
-      }
+
     }
   }
 }
