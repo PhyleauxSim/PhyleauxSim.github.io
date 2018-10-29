@@ -2,20 +2,17 @@
 *Shapes array is an array of all possible shapes for species object.
 *Coalescents array is an array of all live coalescent objects.
 */
-var shapes = ["polygon","rect","circle"];
-var coalescents = [];
+var shapes = ["rect","circle"];
+var models = [];
 
-/**
-*Creates a svg inside of an object with id 'live'.
-* @param {element} where HTML element
-*/
-function createLive(where){
-  var coalSVG = document.createElement("svg");
-  coalSVG.style.width = "100%";
-  coalSVG.style.height = "100%";
-  coalSVG.id = "coalSVG" + coalescents.length;
-  coalescents.push(coalSVG);
-  document.getElementById(where).append(coalSVG);
+function setup(){
+
+}
+
+function draw(){
+  for(var i = 0;i < models.length;i++){
+    models[i].draw();
+  }
 }
 
 /**
@@ -25,7 +22,7 @@ function createLive(where){
 */
 class atributes{
   constructor(){
-    this.shape = Math.floor(3*Math.random());
+    this.shape = shapes[Math.floor((shapes.length)*Math.random())];
     this.color = [255*Math.random(),255*Math.random(),255*Math.random()];
   }
 }
@@ -37,7 +34,7 @@ class atributes{
 the tree.
 * @param {object} parent species object
 */
-class species{
+class object{
   constructor(parent){
     this.parent = parent;
     this.children = [];
@@ -46,6 +43,54 @@ class species{
       this.atributes = new atributes();
     }else{
       this.atributes = this.parent.atributes;
+    }
+  }
+}
+
+class model{
+  constructor(parent,w,h){
+    this.parent = parent;
+    this.svg;
+    this.w = w;
+    this.h = h;
+    this.objects = [];
+
+    /**
+    *Creates a svg inside of this.parent
+    */
+    this.create = function(){
+      var coalSVG = d3
+        .select(this.parent)
+        .append("SVG")
+        .attr("width", this.w)
+        .attr("height", this.h);
+        this.svg = coalSVG;
+    }
+
+    /**
+    *starts the live animation of the model
+    */
+    this.start = function(){
+      for(var i = 0;i < document.getElementById('sampleSize').value;i++){
+        this.objects.push([new object()]);
+        this.svg.append(this.objects[i][0].atributes.shape)
+        .attr("fill","rgb(" +
+        this.objects[i][0].atributes.color[0] + "," +
+        this.objects[i][0].atributes.color[1] + "," +
+        this.objects[i][0].atributes.color[2] + ")")
+        .attr("r",10)
+        .attr("cx",150)
+        .attr("cy",150);
+      }
+    }
+
+    /**
+    *draws live animation of model
+    */
+    this.draw = function(){
+      for(var i = 0;i < this.objects.length;i++){
+
+      }
     }
   }
 }

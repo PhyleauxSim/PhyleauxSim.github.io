@@ -5,12 +5,20 @@
     <script src=prot-script.js></script>
     <!-- d3 library for data visualization and animation -->
     <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3-selection.v1.min.js"></script>
 
     <!-- jstat library for probability distributions -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
 
     <!-- phyleaux library for phylogenetic objects and functions -->
     <script type="text/javascript" src="https://jembrown.github.io/phyleaux.js"></script>
+
+    <!-- p5 library for data visualization and animation -->
+    <script type="text/javascript" src="./p5/p5.js"></script>
+    <!-- <script type="text/javascript" src="./p5/p5.pre-min.js"></script>
+    <script type="text/javascript" src="./p5/p5.min.js"></script> -->
+
+
   </head>
   <body>
     <div class='title'>
@@ -108,7 +116,11 @@
       <div class="in half">
       </div>
       <div id="live" class="out half">
-        <script>createLive("live")</script>
+        <script>
+        models.push(new model("#live",300,300));
+        models[models.length-1].create();
+        models[models.length-1].start();
+        </script>
       </div>
     </div>
 
