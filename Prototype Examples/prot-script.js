@@ -23,7 +23,7 @@ function draw(){
 class atributes{
   constructor(){
     this.shape = shapes[Math.floor((shapes.length)*Math.random())];
-    this.color = [255*Math.random(),255*Math.random(),255*Math.random()];
+    this.color = [Math.round(255*Math.random()),Math.round(255*Math.random()),Math.round(255*Math.random())];
   }
 }
 
@@ -43,6 +43,30 @@ class object{
       this.atributes = new atributes();
     }else{
       this.atributes = this.parent.atributes;
+    }
+    if(this.atributes.shape == 'circle'){
+      this.append = function(where,x,y,r){
+        where.append(this.atributes.shape)
+        .attr("fill","rgb(" +
+        this.atributes.color[0] + "," +
+        this.atributes.color[1] + "," +
+        this.atributes.color[2] + ")")
+        .attr("r",r)
+        .attr('cx',x)
+        .attr('cy',y);
+      }
+    }else{
+      this.append = function(where,x,y,xlen,ylen){
+        where.append(this.atributes.shape)
+        .attr("fill","rgb(" +
+        this.atributes.color[0] + "," +
+        this.atributes.color[1] + "," +
+        this.atributes.color[2] + ")")
+        .attr('width',xlen)
+        .attr('height',ylen)
+        .attr('x',x)
+        .attr('y',y);
+      }
     }
   }
 }
@@ -71,16 +95,20 @@ class model{
     *starts the live animation of the model
     */
     this.start = function(){
-      for(var i = 0;i < document.getElementById('sampleSize').value;i++){
-        this.objects.push([new object()]);
-        this.svg.append(this.objects[i][0].atributes.shape)
-        .attr("fill","rgb(" +
-        this.objects[i][0].atributes.color[0] + "," +
-        this.objects[i][0].atributes.color[1] + "," +
-        this.objects[i][0].atributes.color[2] + ")")
-        .attr("r",10)
-        .attr("cx",150)
-        .attr("cy",150);
+      var sampSize = document.getElementById('sampleSize').value;
+      var svg = this.svg.node().getBoundingClientRect();
+      for(var i = 0;i < sampSize;i++){
+        var r = 10;
+        var xpos = svg.width/(parseInt(sampSize)+1)*(i+1);
+        var ypos = svg.height*0.9;
+        var obj = new object();
+        this.objects.push([obj]);
+        if(this.objects[i][0].atributes.shape == 'circle')
+          this.objects[i][0].append(this.svg,xpos,ypos,r)
+        else
+          this.objects[i][0].append(this.svg,xpos,ypos-r,r*2,r*2)
+
+
       }
     }
 
