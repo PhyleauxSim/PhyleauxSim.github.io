@@ -60,11 +60,11 @@ class model{
     */
     this.create = function(){
       var coalSVG = d3
-        .select(this.parent)
-        .append("SVG")
-        .attr("width", this.w)
-        .attr("height", this.h);
-        this.svg = coalSVG;
+      .select(this.parent)
+      .append("svg")
+      .attr("width", this.w)
+      .attr("height", this.h);
+      this.svg = coalSVG;
     }
 
     /**
