@@ -5,13 +5,6 @@
 var shapes = ["rect","circle"];
 var models = [];
 
-function run(){
-  for(var i = 0;i < models.length;i++){
-    models[i].draw();
-  }
-}
-var interval= 10;
-var main = setInterval(run, 10);
 /**
 *Class that holds the atributes for a species object.
 *Shape variable represents 1 out of the possible shapes in the shapes array.
@@ -86,6 +79,7 @@ class model{
     this.objects = [];
     this.speed = 1;
     this.mutation = 0.1
+    this.interval = 10;
     this.r;
 
     /**
@@ -117,6 +111,8 @@ class model{
         else
           this.objects[this.objects.length-1].append(this.svg,xpos-this.r,ypos-this.r,this.r*2,this.r*2);
       }
+      var t = this;
+      this.main = setInterval(function(){t.draw();}, this.interval);
     }
 
     /**
