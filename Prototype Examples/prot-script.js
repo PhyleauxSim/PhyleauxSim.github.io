@@ -13,16 +13,18 @@ var models = [];
 class atributes{
   constructor(){
     this.shape = shapes[Math.floor((shapes.length)*Math.random())];
-    this.color = [Math.round(255*Math.random()),Math.round(255*Math.random()),Math.round(255*Math.random())];
+    this.color = [Math.round(255*Math.random()),
+      Math.round(255*Math.random()),
+      Math.round(255*Math.random())];
   }
 }
 
 /**
 *Generic class for parent child structure.
-*Parent object is another species object that is before this object in the tree.
+*Parent object is another object that is before this object in the tree.
 *Children array is filled with species objects that come after this object in
 the tree.
-* @param {object} parent species object
+* @param {object} parent parent object
 */
 class object{
   constructor(parent){
@@ -70,9 +72,19 @@ class object{
   }
 }
 
+/**
+*Class for live coalescent/genetic-drift models.
+*Parent object is the html element that contains this model.
+*Type is a int 1 or -1 that determines the direction of the live model.
+* @param {element} parent html element
+* @param {int} w width of svg
+* @param {int} h height of svg
+* @param {int} type -1 or 1 : type of live model
+*/
 class model{
-  constructor(parent,w,h){
+  constructor(parent,w,h,type){
     this.parent = parent;
+    this.type = type;
     this.svg;
     this.w = w;
     this.h = h;
@@ -81,6 +93,7 @@ class model{
     this.mutation = 0.1
     this.interval = 10;
     this.r;
+    this.main = null;
 
     /**
     *Creates a svg inside of this.parent
@@ -96,14 +109,17 @@ class model{
     }
 
     /**
-    *starts the live animation of the model
+    *starts and restarts the live animation of the model
     */
     this.start = function(){
       var sampSize = document.getElementById('sampleSize').value;
       var svg = this.svg.node().getBoundingClientRect();
       for(var i = 0;i < sampSize;i++){
         var xpos = svg.width/(parseInt(sampSize)+1)*(i+1);
-        var ypos = svg.height*0.9;
+        if(this.type > 0)
+          var ypos = svg.height*0.9;
+        else
+          var ypos = svg.height*0.1;
         var obj = new object();
         this.objects.push(obj);
         if(this.objects[this.objects.length-1].atributes.shape == 'circle')
@@ -111,8 +127,10 @@ class model{
         else
           this.objects[this.objects.length-1].append(this.svg,xpos-this.r,ypos-this.r,this.r*2,this.r*2);
       }
-      var t = this;
-      this.main = setInterval(function(){t.draw();}, this.interval);
+      if(this.main == null){
+        var t = this;
+        this.main = setInterval(function(){t.draw();}, this.interval);
+      }
     }
 
     /**
@@ -122,12 +140,19 @@ class model{
       var circles = this.svg.selectAll("circle");
       var length = circles._groups[0].length;
       for(var i = 0;i < length;i++){
-        circles._groups[0][i].cy.baseVal.value-=this.speed;
+        if(this.type > 0)
+          circles._groups[0][i].cy.baseVal.value-=this.speed;
+        else
+          circles._groups[0][i].cy.baseVal.value+=this.speed;
       }
       var rects = this.svg.selectAll("rect");
       var length = rects._groups[0].length;
       for(var i = 0;i < length;i++){
-        rects._groups[0][i].y.baseVal.value-=this.speed;
+        if(this.type > 0)
+          rects._groups[0][i].y.baseVal.value-=this.speed;
+        else {
+          rects._groups[0][i].y.baseVal.value+=this.speed;
+        }
       }
     }
     this.getInfo = function(info){
