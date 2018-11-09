@@ -30,7 +30,7 @@ class object{
   constructor(parent){
     this.parent = parent;
     this.children = [];
-    this.object;
+    this.element;
 
     if (parent == undefined){
       this.atributes = new atributes();
@@ -39,7 +39,7 @@ class object{
     }
     if(this.atributes.shape == 'circle'){
       this.append = function(where,x,y,r){
-        where.append(this.atributes.shape)
+        this.element = where.append(this.atributes.shape)
         .attr("fill","rgb(" +
         this.atributes.color[0] + "," +
         this.atributes.color[1] + "," +
@@ -50,7 +50,7 @@ class object{
       }
     }else{
       this.append = function(where,x,y,xlen,ylen){
-        where.append(this.atributes.shape)
+        this.element = where.append(this.atributes.shape)
         .attr("fill","rgb(" +
         this.atributes.color[0] + "," +
         this.atributes.color[1] + "," +
@@ -83,13 +83,14 @@ class object{
 */
 class model{
   constructor(parent,w,h,type){
+    this.time = 0;
     this.parent = parent;
     this.type = type;
     this.svg;
     this.w = w;
     this.h = h;
     this.objects = [];
-    this.speed = 1;
+    this.speed = 1;this.tempSpeed = 1;
     this.mutation = 0.1
     this.interval = 10;
     this.r;
@@ -112,6 +113,13 @@ class model{
     *starts and restarts the live animation of the model
     */
     this.start = function(){
+      if(this.speed == 0){
+        this.speed = this.tempSpeed;
+        return;
+      }
+      if(this.objects[0] != undefined){
+
+      }
       var sampSize = document.getElementById('sampleSize').value;
       var svg = this.svg.node().getBoundingClientRect();
       for(var i = 0;i < sampSize;i++){
@@ -130,6 +138,13 @@ class model{
       if(this.main == null){
         var t = this;
         this.main = setInterval(function(){t.draw();}, this.interval);
+      }
+    }
+
+    this.stop = function(){
+      if(this.speed != 0){
+        this.tempSpeed = this.speed;
+        this.speed = 0;
       }
     }
 
@@ -154,6 +169,7 @@ class model{
           rects._groups[0][i].y.baseVal.value+=this.speed;
         }
       }
+      this.time += 0.01 * this.speed;
     }
     this.getInfo = function(info){
       return this.info;
