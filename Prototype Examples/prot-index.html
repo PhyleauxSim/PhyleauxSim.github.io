@@ -109,6 +109,16 @@
 
     <div class='example2 section'>
       <div class="in half">
+        <span>
+          <button onclick="models[0].start()">RESTART</button>
+          <button onclick="models[0].pause()">PAUSE</button>
+        </span>
+        <span>
+          <p>Mutaion Rate: </p><input value="5" id="popSize" type="number"></input><br>
+        </span>
+        <span>
+          <p>Sample Size: </p><input onChange="models[0].start()" value="5" id="coalSampleSize" type="number"></input>
+        </span>
       </div>
       <div id="live" class="out half">
         <script>

@@ -69,6 +69,14 @@ class object{
         this.children.push(obj);
       }while(random <= mutation);
     }
+    this.strip = function(){
+      for(var i = 0;i < this.children.length;i++){
+        if(this.children.children[i] != undefined){
+          this.children.children[i].strip();
+        }
+      }
+      this.element.remove();
+    }
   }
 }
 
@@ -95,6 +103,7 @@ class model{
     this.interval = 10;
     this.r;
     this.main = null;
+    this.inputs = ["coalSampleSize","coalMutationRate"];
 
     /**
     *Creates a svg inside of this.parent
@@ -113,14 +122,13 @@ class model{
     *starts and restarts the live animation of the model
     */
     this.start = function(){
-      if(this.speed == 0){
-        this.speed = this.tempSpeed;
-        return;
-      }
       if(this.objects[0] != undefined){
-
+        for(var i = 0;i < this.objects.length;i++){
+          this.objects[i].strip();
+        }
+        this.objects.splice(0,this.objects.length);
       }
-      var sampSize = document.getElementById('sampleSize').value;
+      var sampSize = document.getElementById(this.inputs[0]).value;
       var svg = this.svg.node().getBoundingClientRect();
       for(var i = 0;i < sampSize;i++){
         var xpos = svg.width/(parseInt(sampSize)+1)*(i+1);
@@ -141,10 +149,12 @@ class model{
       }
     }
 
-    this.stop = function(){
+    this.pause = function(){
       if(this.speed != 0){
         this.tempSpeed = this.speed;
         this.speed = 0;
+      }else{
+          this.speed = this.tempSpeed;
       }
     }
 
@@ -152,17 +162,23 @@ class model{
     *draws live animation of model
     */
     this.draw = function(){
+      //looks through all circles in this.svg
       var circles = this.svg.selectAll("circle");
       var length = circles._groups[0].length;
       for(var i = 0;i < length;i++){
+        //checks if circle is in bounds
+        if(circles._groups[0][i].cy.baseVal.value)
+        //moves circles
         if(this.type > 0)
           circles._groups[0][i].cy.baseVal.value-=this.speed;
         else
           circles._groups[0][i].cy.baseVal.value+=this.speed;
       }
+      //looks through all rects in this.svg
       var rects = this.svg.selectAll("rect");
       var length = rects._groups[0].length;
       for(var i = 0;i < length;i++){
+        //moves rects
         if(this.type > 0)
           rects._groups[0][i].y.baseVal.value-=this.speed;
         else {
