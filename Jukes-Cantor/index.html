@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Jukes-Cantor Character Histories</title>
+        <!-- d3 library for data visualization and animation -->
+        <script type="text/javascript" src="d3.v4.min.js"></script>
+        <!-- bootstrap -->
+        <link rel="stylesheet" href="bootstrap.min.css">
+        <!-- jstat library for probability distributions -->
+        <script type="text/javascript" src="jstat.min.js"></script>
+        <!-- phyleaux library for phylogenetic objects and functions -->
+        <script type="text/javascript" src="phyleaux.js"></script>
+        <style type="text/css">
+            @font-face {
+                font-family: Glober;
+                font-weight: semibold;
+                src: url('Glober-SemiBold.otf');
+            }
+
+            /*     
+        h1 {
+            font-family: Glober;
+            font-size: 24px;
+        }
+        
+        p {
+            font-family: Glober;
+            font-size: 14px;
+        }*/
+            #tooltip {
+                position: relative;
+                width: 250px;
+                height: auto;
+                padding: 10px;
+                background-color: white;
+                -webkit-border-radius: 10px;
+                -moz-border-radius: 10px;
+                border-radius: 10px;
+                -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+                -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+                box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+                pointer-events: none;
+                overflow: visible
+            }
+
+            #tooltip.hidden {
+                display: none;
+            }
+
+            #tooltip p {
+                margin: 0;
+                font-family: sans-serif;
+                font-size: 16px;
+                line-height: 20px;
+            }
+
+            h1{
+                  padding: 1em;
+                  margin: 0px;
+                }
+
+                .title{
+                  height: auto;
+                  color: #99A3A4;
+                  background-color: #424949;
+                }
+
+                .footer {
+                  position: relative;
+                  bottom: 0;
+                  width: 100%;
+                  /* Set the fixed height of the footer here */
+                  height: 160px;
+                  /*line-height: 60px;  Vertically center the text there */
+                  background-color: #f5f5f5;
+                }
+        </style>
+        <!-- <script type="text/javascript" src="main.js"></script> -->
+        <script>
+            function showValueAppendScale(val) {
+                document.getElementById("brl").innerHTML = val;
+                appendScale(val);
+            }
+
+            function appendScale(val) {
+                var plotSvg = d3.select("#histories").append("svg").attr("width", 800).attr("height", 20);
+                plotSvg.append("line").attr("x1", 0).attr("x2", 800).attr("y1", 19).attr("y2", 19).attr("stroke", "black").attr("stroke-width", 2);
+                plotSvg.append("line").attr("x1", 1).attr("x2", 1).attr("y1", 20).attr("y2", 15).attr("stroke", "black").attr("stroke-width", 2);
+                plotSvg.append("line").attr("x1", 800 - 1).attr("x2", 800 - 1).attr("y1", 20).attr("y2", 15).attr("stroke", "black").attr("stroke-width", 2);
+                plotSvg.append("text").attr("fill", "black").attr("x", 0).attr("text-anchor", "start").attr("font-size", "14px").attr("y", 10).text("0.0");
+                plotSvg.append("text").attr("fill", "black").attr("x", 800).attr("text-anchor", "end").attr("font-size", "14px").attr("y", 10).text(val);
+                d3.select("#histories").append("br");
+            }
+        </script>
+    </head>
+    <body>
+        <div class="title">
+            <h1 style="text-align: center;">Jukes-Cantor Character Histories</h1>
+        </div>
+        <div class="container">
+            <div id="tooltip" class="hidden" style="overflow: visible;">
+                <p>
+                    <strong>Detailed Character History</strong>
+                </p>
+                <p>
+                    <i>Changes  (Waiting Times)</i>
+                </p>
+                <br>
+                <p>
+                    <span id="value"></span>
+                </p>
+            </div>
+            <div class="container d-inline">
+                <div  class="main">
+                    <div class="row">
+                        <div class="col-md-6 d-block">
+                            <div class="form-group">
+                <small class="form-text">Set the branch length using the slider. Each time you click the "Draw Character History" button, a history of character change will be recorded below. Each history has a total length equal to the branch length you've chosen. Colors correspond to different nucleotide states (A, C, G, and T). The length of each colored segment shows the proportion of the branch length the character spends in a given state. Mousing over a character history will give a detailed record of the changes and corresponding waiting times.
+                </small>
+            </div>
+
+                            <div class="form-group">
+                                <label>
+                                    Current Branch Length: <span id="brl">0.0</span>
+                                </label>
+                                <input class="wide-slider form-control" type="range" min="0.0" max="10.0" step="0.01" id="brlSlider" onchange="showValueAppendScale(this.value);">  
+        
+                            </div>
+                            <div class="form-group">
+                                <label>Fixed Starting State:</label>
+                                <input type="checkbox" id="fixStart" onclick="fixStartState()" checked>
+                            </div>
+                            <div class="form-group">
+                                <label>Show Character States:</label>
+                                <input type="checkbox" id="showStates" onclick="showCharStates()" checked>
+                            </div>
+                            <div class="form-group">
+                                <button id="clearCharHists" class="btn btn-primary" style="display: inline-block; text-align: right">Clear Character History
+            </button>
+                            </div>
+                            <div class="form-group">
+                                <button id="drawCharHist" class="btn btn-primary" style="display: inline-block; text-align: right">Draw Character History
+            </button>
+                            </div>
+                            
+                        </div>
+                        <div >
+                            <section id="histories">
+                                <small class="form-text">Character History Record:</small>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                var myModel = new Model(bf = [0.25, 0.25, 0.25, 0.25],rates = [1, 1, 1, 1, 1, 1],gammaRates = true,alpha = 10,invSites = false,i = 0);
+
+                var myCharHistory = new characterHistory(model = myModel);
+
+                var startState = null;
+
+                (function fixStartState() {
+                                    if (document.getElementById("fixStart").checked === true) {
+                                        startState = "A";
+                                    } else {
+                                        startState = null;
+                                    }
+                                })()
+                var show = true;
+
+                function showCharStates() {
+                    if (document.getElementById("showStates").checked === true) {
+                        show = true;
+                    } else {
+                        show = false;
+                    }
+                }
+
+                d3.select("#clearCharHists").on("click", function() {
+                    d3.select("#histories").selectAll("svg").remove();
+                    d3.select("#histories").selectAll("br").remove();
+                    var brl = parseFloat(d3.select("#brlSlider").property("value"));
+                    appendScale(brl);
+                });
+
+                d3.select("#drawCharHist").on("click", function() {
+                    var brl = parseFloat(d3.select("#brlSlider").property("value"));
+                    myCharHistory.sampleHistory(brl, startState);
+                    var plotSvg = d3.select("#histories").append("svg");
+                    myCharHistory.drawHistory(brl, w = 800, h = 30, svg = plotSvg, showStates = show);
+                    plotSvg.datum([myCharHistory.states, myCharHistory.waitingTimes]);
+
+                    plotSvg.on("mouseover", function(d) {
+                        d3.select("#tooltip").style("left", d3.event.clientX + "px").style("top", d3.event.clientY + "px");
+                        if (d[0].length === 1) {
+                            d3.select("#tooltip").select("#value").append("p").text("No character changes.")
+                        }
+                        for (var i = 0; i < d[0].length - 1; i++) {
+                            d3.select("#tooltip").select("#value").append("p").text(d[0][i] + " -> " + d[0][i + 1] + "  (" + parseFloat(d[1][i]).toFixed(4) + ")");
+                        }
+                        d3.select("#tooltip").classed("hidden", false);
+                    })
+
+                    plotSvg.on("mouseout", function() {
+                        //Hide the tooltip
+                        d3.select("#tooltip").classed("hidden", true);
+                        d3.select("#tooltip").select("#value").selectAll("p").remove();
+                    })
+
+                    d3.select("#histories").append("br");
+
+                });
+            </script>
+            
+            <script>
+                d3.select("#brlSlider").property("value", 1.0);
+                showValueAppendScale(1.0);
+            </script>
+        </div>
+        <footer class="footer">
+            <div class="container">
+                <img width=100 height=100 src="https://raw.githubusercontent.com/jembrown/websiteImages/master/ssb.png">
+                <p>Development of the Phyleaux Javascript Library and related interactive phylogenetics tools is supported by the Society of Systematic Biologists.
+            </p>
+                <p>Comments and bug reports should be directed to jembrown@lsu.edu.</p>
+            </div>
+</div>
+</footer>
+</body></html>

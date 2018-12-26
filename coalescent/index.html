@@ -1,0 +1,77 @@
+<html>
+<head>
+  <title>Phylo Example</title>
+  <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- our css -->
+  <link rel=stylesheet href=prot-style.css>
+
+<!-- Bootstrap-{slider} -->
+  <link rel="stylesheet" type="text/css" href="bootstrap-slider.min.css">
+  <link rel="stylesheet" href="bootstrap.min.css">
+  <!-- d3 library for data visualization and animation -->
+  <script type="text/javascript" src="d3.v4.min.js"></script>
+  <script src="d3-selection.v1.min.js"></script>
+
+  <!-- jstat library for probability distributions -->
+  <script type="text/javascript" src="jstat.min.js"></script>
+
+  <!-- phyleaux library for phylogenetic objects and functions -->
+  <script type="text/javascript" src="phyleaux.js"></script>
+
+  <script type="text/javascript" src="vivus.min.js"></script>
+
+  <script src=prot-script.js></script>
+  <style type="text/css">
+  .slider.slider-horizontal .tooltip.tooltip-main.in,
+  .slider.slider-vertical .tooltip.tooltip-main.in 
+  { opacity: 1 !important; background: transparent; }
+  </style>
+</head>
+<body>
+  <div class='title'>
+    <h1 style="text-align: center;">Coalescent Histories In a Population</h1>
+  </div>
+  <div class="container">
+<div style="padding-top:10px" class="main">
+    <div class="row">
+    <div class="col-sm-3">
+<div>
+   <div class="form-group">
+    <label>Population Size</label>
+    <input id="ex8" data-slider-id='ex1Slider' type="text" data-slider-min="15" data-slider-max="30" data-slider-step="1" data-slider-value="17"/>
+  </div>
+   <div class="form-group">
+    <label>Sample Size</label>
+    <input id="ex9" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="15" data-slider-step="1" data-slider-value="5"/>
+  </div>
+   <div class="form-group">
+    <label>Number of Generations</label>
+    <input id="ex10" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="30" data-slider-step="5" data-slider-value="20"/>
+  </div>
+    </div> 
+</div>
+    <div class="col-sm-9">
+      <div id="visualization"></div>
+    </div>
+  </div>
+</div>
+</div>
+<script type="text/javascript" src="bootstrap-slider.min.js"></script>
+<script type="text/javascript" src="main.js"></script>
+<script>
+  window.onload = event => {
+    drawCoalescentTree();
+    new Vivus('vis', {duration: 200, type: 'scenario', start: 'autostart'},() => {console.log('animating...')})
+ };
+
+ //redraw coalescent on page resize
+ window.onresize = (event) => {
+  drawCoalescentTree();
+ }
+</script>
+      </div>
+    </div>
+  </body>
+  </html>
