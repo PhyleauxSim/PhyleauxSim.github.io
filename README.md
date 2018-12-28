@@ -27,5 +27,5 @@ Run it localy
 
 * With your server running, visit the site: `http://localhost:8000`.
 
-Or you can visit this [link](https://phyleaux-nrbaylmspt.now.sh/) to access our website directly in your browser.
+Or you can visit this [link](https://phyleaux-mylntdcvtw.now.sh/) to access our website directly in your browser.
 
