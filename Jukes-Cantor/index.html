@@ -4,32 +4,36 @@
         <meta charset="utf-8">
         <title>Jukes-Cantor Character Histories</title>
         <!-- d3 library for data visualization and animation -->
-        <script type="text/javascript" src="d3.v4.min.js"></script>
+        <script type="text/javascript" src="../js/d3.v4.min.js"></script>
         <!-- bootstrap -->
-        <link rel="stylesheet" href="bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../css/bootstrap-slider.min.css">
+        <link rel="stylesheet" href="../css/bootstrap.min.css">
         <!-- jstat library for probability distributions -->
-        <script type="text/javascript" src="jstat.min.js"></script>
+        <script type="text/javascript" src="../js/jstat.min.js"></script>
         <!-- phyleaux library for phylogenetic objects and functions -->
-        <script type="text/javascript" src="phyleaux.js"></script>
+        <script type="text/javascript" src="../js/phyleaux.js"></script>
+        <script type="text/javascript" src="../js/bootstrap-slider.min.js"></script>
         <style type="text/css">
+
+          .slider.slider-horizontal .tooltip.tooltip-main.in,
+          .slider.slider-vertical .tooltip.tooltip-main.in 
+          { opacity: 1 !important; background: transparent; }
+
             @font-face {
                 font-family: Glober;
                 font-weight: semibold;
                 src: url('Glober-SemiBold.otf');
             }
-
-            /*     
-        h1 {
-            font-family: Glober;
-            font-size: 24px;
-        }
-        
-        p {
-            font-family: Glober;
-            font-size: 14px;
-        }*/
+            .col-3{
+                background-color: #D6EFFA;
+            }
+            .col-wrapper {
+                margin: 0 auto;
+                width: 85%;
+                padding-top:10px;
+            }
             #tooltip {
-                position: relative;
+                position: absolute;
                 width: 250px;
                 height: auto;
                 padding: 10px;
@@ -41,7 +45,7 @@
                 -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
                 box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
                 pointer-events: none;
-                overflow: visible
+                overflow: visible;
             }
 
             #tooltip.hidden {
@@ -60,23 +64,19 @@
                   margin: 0px;
                 }
 
-                .title{
-                  height: auto;
-                  color: #99A3A4;
-                  background-color: #424949;
+            .title{
+                height: auto;
+                color: #99A3A4;
+                background-color: #424949;
                 }
 
-                .footer {
-                  position: relative;
-                  bottom: 0;
-                  width: 100%;
-                  /* Set the fixed height of the footer here */
-                  height: 160px;
-                  /*line-height: 60px;  Vertically center the text there */
-                  background-color: #f5f5f5;
-                }
+                footer{
+                background-color: #424949;
+                color: #99A3A4;
+                text-align: center;
+                height:100%;
+            }
         </style>
-        <!-- <script type="text/javascript" src="main.js"></script> -->
         <script>
             function showValueAppendScale(val) {
                 document.getElementById("brl").innerHTML = val;
@@ -98,34 +98,19 @@
         <div class="title">
             <h1 style="text-align: center;">Jukes-Cantor Character Histories</h1>
         </div>
-        <div class="container">
-            <div id="tooltip" class="hidden" style="overflow: visible;">
-                <p>
-                    <strong>Detailed Character History</strong>
-                </p>
-                <p>
-                    <i>Changes  (Waiting Times)</i>
-                </p>
-                <br>
-                <p>
-                    <span id="value"></span>
-                </p>
-            </div>
-            <div class="container d-inline">
-                <div  class="main">
+            <div class="container-fluid">
                     <div class="row">
-                        <div class="col-md-6 d-block">
-                            <div class="form-group">
-                <small class="form-text">Set the branch length using the slider. Each time you click the "Draw Character History" button, a history of character change will be recorded below. Each history has a total length equal to the branch length you've chosen. Colors correspond to different nucleotide states (A, C, G, and T). The length of each colored segment shows the proportion of the branch length the character spends in a given state. Mousing over a character history will give a detailed record of the changes and corresponding waiting times.
-                </small>
-            </div>
-
+                        <div class="col-3">
+                            <div class="col-wrapper">
+                                <div class="form-group">
+                                <small class="form-text font-weight-bold">Set the branch length using the slider. Each time you click the "Draw Character History" button, a history of character change will be recorded below. Each history has a total length equal to the branch length you've chosen. Colors correspond to different nucleotide states (A, C, G, and T). The length of each colored segment shows the proportion of the branch length the character spends in a given state. Mousing over a character history will give a detailed record of the changes and corresponding waiting times.
+                                </small>
+                            </div>
                             <div class="form-group">
                                 <label>
                                     Current Branch Length: <span id="brl">0.0</span>
                                 </label>
                                 <input class="wide-slider form-control" type="range" min="0.0" max="10.0" step="0.01" id="brlSlider" onchange="showValueAppendScale(this.value);">  
-        
                             </div>
                             <div class="form-group">
                                 <label>Fixed Starting State:</label>
@@ -136,22 +121,31 @@
                                 <input type="checkbox" id="showStates" onclick="showCharStates()" checked>
                             </div>
                             <div class="form-group">
-                                <button id="clearCharHists" class="btn btn-primary" style="display: inline-block; text-align: right">Clear Character History
-            </button>
+                                <button id="clearCharHists" class="btn btn-primary" style="display: inline-block; text-align: right">Clear Character History</button>
                             </div>
                             <div class="form-group">
-                                <button id="drawCharHist" class="btn btn-primary" style="display: inline-block; text-align: right">Draw Character History
-            </button>
+                                <button id="drawCharHist" class="btn btn-primary" style="display: inline-block; text-align: right">Draw Character History</button>
                             </div>
-                            
+                            </div>
                         </div>
-                        <div >
-                            <section id="histories">
+                        <div class="col-9">
+                            <div id="tooltip" class="hidden" style="overflow: visible;">
+                                <p>
+                                    <strong>Detailed Character History</strong>
+                                </p>
+                                <p>
+                                    <i>Changes  (Waiting Times)</i>
+                                </p>
+                                <br>
+                                <p>
+                                    <span id="value"></span>
+                                </p>
+                            </div>
+                            <section class="col-wrapper" id="histories">
                                 <small class="form-text">Character History Record:</small>
                             </section>
                         </div>
                     </div>
-                </div>
             </div>
             <script>
                 var myModel = new Model(bf = [0.25, 0.25, 0.25, 0.25],rates = [1, 1, 1, 1, 1, 1],gammaRates = true,alpha = 10,invSites = false,i = 0);
@@ -192,7 +186,10 @@
                     plotSvg.datum([myCharHistory.states, myCharHistory.waitingTimes]);
 
                     plotSvg.on("mouseover", function(d) {
-                        d3.select("#tooltip").style("left", d3.event.clientX + "px").style("top", d3.event.clientY + "px");
+                        // total hack. should find a better way to position tooltip instead hardcoding values.
+                        console.log('x', d3.event.clientX)
+                        console.log('y', d3.event.clientY)
+                        d3.select("#tooltip").style("left", (d3.event.clientX - 300) + "px").style("top", (d3.event.clientY - 65) + "px");
                         if (d[0].length === 1) {
                             d3.select("#tooltip").select("#value").append("p").text("No character changes.")
                         }
@@ -212,19 +209,15 @@
 
                 });
             </script>
-            
             <script>
                 d3.select("#brlSlider").property("value", 1.0);
                 showValueAppendScale(1.0);
             </script>
-        </div>
         <footer class="footer">
             <div class="container">
-                <img width=100 height=100 src="https://raw.githubusercontent.com/jembrown/websiteImages/master/ssb.png">
+                <img width=100 height=100 src="../img/ssb.png">
                 <p>Development of the Phyleaux Javascript Library and related interactive phylogenetics tools is supported by the Society of Systematic Biologists.
             </p>
                 <p>Comments and bug reports should be directed to jembrown@lsu.edu.</p>
             </div>
-</div>
-</footer>
-</body></html>
+</div></footer></body></html>
