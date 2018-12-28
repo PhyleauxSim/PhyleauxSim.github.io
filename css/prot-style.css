@@ -1,0 +1,52 @@
+@font-face {
+  font-family: Glober; font-weight: semibold; src: url('Glober-SemiBold.otf');
+}
+body{
+  margin: 0px;
+  font-family: Glober;
+}
+div #visualization{
+}
+
+button{
+  width: 100%;
+  height: 50px;
+  border-radius: 10px;
+  border: 1px solid black;
+  padding: 5px;
+}
+h1{
+  padding: 1em;
+  margin: 0px;
+}
+p{
+  margin: 0px;
+  font-size: 1.9em;
+}
+.title{
+  height: auto;
+  color: #99A3A4;
+  background-color: #424949;
+}
+.half{
+  height: auto;
+  width: 50%;
+  height: 100%;
+}
+.section{
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+.example1{
+background-color: #EC7063;
+}
+.example2{
+background-color: grey;
+}
+.example3{
+background-color: #5DADE2;
+}
+.out span{
+  margin-left: 0px;
+}
