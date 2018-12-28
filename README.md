@@ -29,6 +29,3 @@ Run it localy
 
 Or you can visit this [link](https://phyleaux-nrbaylmspt.now.sh/) to access our website directly in your browser.
 
-## Code Dependencies
-
-* [python3](https://www.python.org/)
