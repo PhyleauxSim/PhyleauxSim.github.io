@@ -5,7 +5,6 @@ PhyleauxSim.github.
 
 * [Description](#description)
 * [Run the Application](#run-the-application)
-* [Code Dependencies](#code-dependencies)
 
 ## Description
 This is a library for phylogenetic examples and illustrations.
