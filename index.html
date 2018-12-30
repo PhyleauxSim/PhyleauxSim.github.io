@@ -1,5 +1,5 @@
 <head>
-    <title>Phyleaux</title>
+    <title>PhyleauxSim - Interactive Phylogenetic Simulations and Visualizations</title>
 
     <!-- Fonts -->
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -13,34 +13,39 @@
     <!-- Full Page CSS -->
     <link rel="stylesheet" type="text/css" href="css/jquery.fullpage.css" />
 
+	<style>
+		.buttonlink {
+			color: #461d7c;
+		}
+	</style>
+
 </head>
 
 <div class="slide" id="chapter1" data-anchor="chapter1">
     <div class="chapter-nav">
         <div class="left">
-            <h1>Phylogenetics Simulator</h1>
-                            <p>This is an introduction to the basic concepts of Phylogenetic trees</p>
-                            </br>
-                            </br>
-                        </div>
-                        <div class="right">
-                            <div>
-                                <a href="./coalescent/">
-                                    <div class="nav-unit-wrapper-s tile1">
-                                        <span class="nav-unit-title-s">Single Population Coalescent</span>
-                                    </div>
-                                </a>
-                                <a href="./animatedLTT/">
-                                    <div class="nav-unit-wrapper-s tile2">
-                                        <span class="nav-unit-title-s">Animated Lineage-Through-Time(LTT) Plot</span>
-                                    </div>
-                                </a>
-                                <a href="./Jukes-Cantor/">
-                                    <div class="nav-unit-wrapper-s tile3">
-                                        <span class="nav-unit-title-s">Jukes-Cantor Character Histories</span>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <h1>PhyleauxSim</h1>
+			<p>This site provides interactive visualizations and simulations to help develop deeper intuition and understanding of phylogenetics and molecular evolution.</p>
+			<p>PhyleauxSim is developed by <a href="https://phyleauxlab.github.io/">Jeremy Brown's Phyleauxgenetics Lab</a> at <a href="https://www.lsu.edu/">Louisiana State University</a> with support from the <a href="https://www.systbio.org/">Society of Systematic Biologists</a>.</p>
+		</div>
+		<div class="right">
+			<div>
+				<a href="./coalescent/" class="buttonlink">
+					<div class="nav-unit-wrapper-s tile1">
+						<span class="nav-unit-title-s">Single Population Coalescent</span>
+					</div>
+				</a>
+				<a href="./animatedLTT/" class="buttonlink">
+					<div class="nav-unit-wrapper-s tile2">
+						<span class="nav-unit-title-s">Animated Lineage-Through-Time(LTT) Plot</span>
+					</div>
+				</a>
+				<a href="./Jukes-Cantor/" class="buttonlink">
+					<div class="nav-unit-wrapper-s tile3">
+						<span class="nav-unit-title-s">Jukes-Cantor Character Histories</span>
+					</div>
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
