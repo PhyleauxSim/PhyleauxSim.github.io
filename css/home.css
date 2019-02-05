@@ -3,7 +3,8 @@
 body{
 	margin: 0;
 	font-family: 'Assistant', sans-serif;
-	background-color: #2A2738;
+	/* background-color: #2A2738; */
+	background-color: #461d7c;
 	/*min-height: 600px;
 */
 }
@@ -46,7 +47,8 @@ h4{
 
 a{
 	text-decoration: none;
-	color: #4A4A4A;
+	/* color: #4A4A4A; */
+	color: white;
 }
 
 
@@ -491,7 +493,7 @@ ul.menu-sub{
 	/**/
 	.nav-unit-wrapper-s{
     	width: 15em; 
-    	text-align: left;
+    	text-align: center;
     }
 
     .nav-unit-wrapper-s img{
@@ -500,7 +502,7 @@ ul.menu-sub{
 
     .nav-unit-title-s{
 	  
-	    padding-left: 10%;
+	    /* padding-left: 10%; */
 	
 	}
 
@@ -580,7 +582,7 @@ ul.menu-sub{
 
     .nav-unit-title-s{
 	  	font-size: 1em;
-	    padding-left: 10%;
+	   /*  padding-left: 10%; */
 	
 	}
 
@@ -613,12 +615,12 @@ ul.menu-sub{
 	 max-width: 200px;
 	 margin: 0 auto;
 	 padding-bottom: 5%;
-	}*/
+	}
 
 	.right{
 		padding-top: 8em;
 	}
-
+*/
 
 }
 
