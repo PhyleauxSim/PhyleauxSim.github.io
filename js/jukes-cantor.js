@@ -63,20 +63,10 @@ let myModel = new Model(
 
 let myCharHistory = new characterHistory((model = myModel));
 
-let startState = null;
+let startState = document.getElementById("fixStart").checked ? "A" : null;
 
-(function fixStartState() {
-  if (document.getElementById("fixStart").checked === true) {
-    startState = "A";
-  } else {
-    startState = null;
-  }
-})();
-let show = true;
+let show = document.getElementById("showStates").checked;
 
-function showCharStates() {
-  show = document.getElementById("showStates").checked === true;
-}
 d3.select("#clearCharHists").on("click", function() {
   d3
     .select("#histories")
