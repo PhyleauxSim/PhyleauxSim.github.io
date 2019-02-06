@@ -13,6 +13,8 @@
   <script src="../js/d3-selection.v1.min.js"></script>
   <!-- jstat library for probability distributions -->
   <script type="text/javascript" src="../js/jstat.min.js"></script>
+  <!-- lodash -->
+  <script src="../js/lodash.min.js"></script>
   <!-- phyleaux library for phylogenetic objects and functions -->
   <script src="../js/phyleaux.js"></script>
   <!-- vivus library for animating svg -->
@@ -20,7 +22,7 @@
   <style>
   .slider.slider-horizontal .tooltip.tooltip-main.in,
   .slider.slider-vertical .tooltip.tooltip-main.in 
-  { opacity: 1 !important; background: transparent; }
+  { opacity: .55 !important; background: transparent; }
   footer{
     background-color: #424949;
     color: #99A3A4;
@@ -57,16 +59,16 @@
             <div class="col-3">
             <div class="col-wrapper">
                <div class="form-group">
-                <label>Population Size</label>
+                <label class="font-weight-bold">Population Size</label>
                 <input id="ex8" data-slider-id='ex1Slider' type="text" data-slider-min="15" data-slider-max="30" data-slider-step="1" data-slider-value="17"/>
               </div>
                <div class="form-group">
-                <label>Sample Size</label>
+                <label class="font-weight-bold">Sample Size</label>
                 <input id="ex9" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="15" data-slider-step="1" data-slider-value="5"/>
               </div>
                <div class="form-group">
-                <label>Number of Generations</label>
-                <input id="ex10" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="30" data-slider-step="5" data-slider-value="20"/>
+                <label class="font-weight-bold">Number of Generations</label>
+                <input id="ex10" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="30" data-slider-step="5" data-slider-value="10"/>
               </div>
               <div class="form-group">
                 <button class="btn btn-primary" onclick="drawCoalescentTree()">Redraw</button>
@@ -84,15 +86,15 @@
 <script type="text/javascript" src="../js/main.js"></script>
 <script>
     drawCoalescentTree();
-    new Vivus('vis', {duration: 200, type: 'scenario', start: 'autostart'},() => {})
+    // const v = new Vivus('vis', {type: 'oneByOne', start: 'autostart'})
+    // v.play(0.2)
      //redraw coalescent on page resize
-     window.onresize = (event) => {
-      drawCoalescentTree();
-     }
+     // window.onresize = (event) => {
+     //  drawCoalescentTree();
+     // }
 </script>
 <footer class="footer">
     <div class="container">
-       <img width=100 height=100 src="../img/ssb.png">
         <p>Development of the Phyleaux Javascript Library and related interactive phylogenetics tools is supported by the Society of Systematic Biologists.</p>
         <p>Comments and bug reports should be directed to jembrown@lsu.edu.</p> 
     </div>
