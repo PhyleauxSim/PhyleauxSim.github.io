@@ -248,12 +248,16 @@ class coalescentHistory {
       for (let pop = 0; pop < this.popSize; pop++) {
         let individual = this.descMatrix[gen][pop];
         if (individual.selected && gen != this.nGens - 1) {
+          const x1 = individual.xPos / this.popSize * w + padding + 20;
+          const x2 = individual.parent.xPos / this.popSize * w + padding + 20;
+          const y1 = gen / this.nGens * h + padding;
+          const y2 = (gen + 1) / this.nGens * h + padding;
           coalSVG
             .append("line")
-            .attr("x1", individual.xPos / this.popSize * w + padding + 20)
-            .attr("x2", individual.parent.xPos / this.popSize * w + padding + 20)
-            .attr("y1", gen / this.nGens * h + padding)
-            .attr("y2", (gen + 1) / this.nGens * h + padding)
+            .attr("x1", x1)
+            .attr("x2", x2)
+            .attr("y1", y1)
+            .attr("y2", y2)
             .attr("stroke", "red")
             .attr("stroke-width", 2);
         }
@@ -453,16 +457,14 @@ class Model {
     return time;
   }
 
-  findStateIndex(st) {
-    if (st === "A") {
-      return 0;
-    } else if (st === "C") {
-      return 1;
-    } else if (st === "G") {
-      return 2;
-    } else if (st === "T") {
-      return 3;
+  findStateIndex(state) {
+    const states = {
+      "A": 0,
+      "C": 1,
+      "G": 2,
+      "T": 3,
     }
+    return states[state];
   }
 }
 
@@ -1377,17 +1379,15 @@ function findSplitCommas(nodeStr) {
 
 // --------------------------------------------------
 
-function findStateIndex(st) {
-  if (st === "A") {
-    return 0;
-  } else if (st === "C") {
-    return 1;
-  } else if (st === "G") {
-    return 2;
-  } else if (st === "T") {
-    return 3;
+function findStateIndex(state) {
+    const states = {
+      "A": 0,
+      "C": 1,
+      "G": 2,
+      "T": 3,
+    }
+    return states[state];
   }
-}
 
 // --------------------------------------------------
 
