@@ -22,7 +22,7 @@ class characterHistoryTree {
     } else {
       this.tr.root.states.push(multiDraw(["A", "C", "G", "T"], this.model.bf));
     }
-    for (var i = 0; i < this.tr.root.desc.length; i++) {
+    for (let i = 0; i < this.tr.root.desc.length; i++) {
       this.sampleHistoryNode(this.tr.root.desc[i], this.tr.root.states[0]);
     }
   }
@@ -42,7 +42,7 @@ class characterHistoryTree {
       }
     }
     if (node.desc != null) {
-      for (var i = 0; i < node.desc.length; i++) {
+      for (let i = 0; i < node.desc.length; i++) {
         this.sampleHistoryNode(
           node.desc[i],
           node.states[node.states.length - 1]
@@ -104,14 +104,14 @@ class characterHistory {
         .attr("id", id);
     }
 
-    var states = this.states;
-    var waitingTimes = this.waitingTimes;
-    var model = this.model;
+    let states = this.states;
+    let waitingTimes = this.waitingTimes;
+    let model = this.model;
 
     // Can't access the characterHistory object with "this" inside for loop
-    var currX = 0;
-    var waitTimeSum = 0;
-    for (var i = 0; i < states.length; i++) {
+    let currX = 0;
+    let waitTimeSum = 0;
+    for (let i = 0; i < states.length; i++) {
       svg
         .append("line")
         .attr("stroke", colors[model.findStateIndex(states[i])])
@@ -168,108 +168,90 @@ class coalescentHistory {
     this.nGens = nGens;
     this.sampleSize = sampleSize;
     this.descMatrix = [];
-    for (var i = 0; i < nGens; i++) {
+    for (let i = 0; i < nGens; i++) {
       this.descMatrix.push([]);
-      for (var j = 0; j < popSize; j++) {
-        this.descMatrix[i].push(new coalescentIndividual(null, j, [], false));
+      for (let j = 0; j < popSize; j++) {
+        const individual = new coalescentIndividual(null, j);
+        this.descMatrix[i].push(individual);
       }
     }
   }
 
   sampleHistory() {
-    var numSelections = 0;
-    //if (this.sampleSize < this.popSize){
+    let numSelections = 0;
     while (numSelections < this.sampleSize) {
       // Select individuals from most recent generation
-      var selectedInd = Math.floor(Math.random() * this.popSize);
-      if (this.descMatrix[0][selectedInd].selected === false) {
-        this.descMatrix[0][selectedInd].selected = true;
-        numSelections++;
-      }
+      let selectedIndividual = Math.floor(Math.random() * this.popSize);
+      this.descMatrix[0][selectedIndividual].selected = true;
+      numSelections++;
     }
-    for (var g = 1; g < this.nGens; g++) {
-      for (var i = 0; i < this.popSize; i++) {
+    for (let g = 1; g < this.nGens; g++) {
+      for (let i = 0; i < this.popSize; i++) {
         if (this.descMatrix[g - 1][i].selected) {
-          var parentIndex = Math.floor(Math.random() * this.popSize);
+          let parentIndex = Math.floor(Math.random() * this.popSize);
           this.descMatrix[g - 1][i].parent = this.descMatrix[g][parentIndex];
           this.descMatrix[g][parentIndex].desc.push(this.descMatrix[g - 1][i]);
           this.descMatrix[g][parentIndex].selected = true;
         }
       }
     }
-    //}
   }
 
   drawSortedHistory(w, h, padding, sectionID) {
-    var coalSVG = d3
+    let coalSVG = d3
       .select("body") // Create new svg
       .select(sectionID)
       .append("svg")
       .attr("width", w)
       .attr("height", h)
-      .attr('id', 'vis');
-    for (var g = this.nGens - 2; g >= 0; g--) {
-      // Sort so that lines don't cross
-      var swaps = true;
-      while (swaps) {
-        // Keep looping when swaps happen, because individuals are reordered
-        swaps = false;
-        for (var i = 0; i < this.popSize - 1; i++) {
-          for (var j = i + 1; j < this.popSize; j++) {
-            if (
-              this.descMatrix[g][i].selected &&
-              this.descMatrix[g][j].selected
-            ) {
-              if (
-                (this.descMatrix[g][i].parent.xPos >
-                  this.descMatrix[g][j].parent.xPos &&
-                  this.descMatrix[g][i].xPos < this.descMatrix[g][j].xPos) ||
-                (this.descMatrix[g][i].parent.xPos <
-                  this.descMatrix[g][j].parent.xPos &&
-                  this.descMatrix[g][i].xPos > this.descMatrix[g][j].xPos)
-              ) {
-                var xTemp = this.descMatrix[g][i].xPos;
-                this.descMatrix[g][i].xPos = this.descMatrix[g][j].xPos;
-                this.descMatrix[g][j].xPos = xTemp;
-                this.descMatrix[g][i].swapped = true;
-                this.descMatrix[g][j].swapped = true;
-                swaps = true;
-              }
-            }
-          }
-        }
+      .attr("id", "vis");
+
+    function updatePositions(arr){
+      for(let i = 0; i < arr.length; i++){
+        arr[i].xPos = i
       }
     }
-    for (var gen = 0; gen < this.nGens; gen++) {
+
+    for(let i = 0; i < this.nGens; i++){
+      let results = _.groupBy(this.descMatrix[i], 'selected')
+      let a = results['false']
+      let b = results['true']
+      let c = [].concat(b, a)
+      updatePositions(c)
+      this.descMatrix[i] = c
+    }
+    for (let gen = 0; gen < this.nGens; gen++) {
       // Circles
-      for (var pop = 0; pop < this.popSize; pop++) {
-        var thisInd = this.descMatrix[gen][pop];
-        if (!thisInd.selected) {
+      for (let pop = 0; pop < this.popSize; pop++) {
+        let individual = this.descMatrix[gen][pop];
+        
+        if (individual.selected) {
           coalSVG
             .append("circle")
-            .attr("cx", thisInd.xPos / this.popSize * w + padding + 20)
-            .attr("cy", gen / this.nGens * h + padding)
-            .attr("r", 10)
-            .attr("fill", "blue");
-        } else if (thisInd.selected) {
-          coalSVG
-            .append("circle")
-            .attr("cx", thisInd.xPos / this.popSize * w + padding + 20)
+            .attr("cx", individual.xPos / this.popSize * w + padding + 20)
             .attr("cy", gen / this.nGens * h + padding)
             .attr("r", 10)
             .attr("fill", "red");
+        } else {
+          coalSVG
+            .append("circle")
+            .attr("cx", individual.xPos / this.popSize * w + padding + 20)
+            .attr("cy", gen / this.nGens * h + padding)
+            .attr("r", 10)
+            .attr("fill", "blue");
         }
       }
-    } // Finish plotting circles for individuals
-    for (var gen = 0; gen < this.nGens; gen++) {
+    } 
+    //Finish plotting circles for individuals
+    for (let gen = 0; gen < this.nGens; gen++) {
       // Lines
-      for (var pop = 0; pop < this.popSize; pop++) {
-        var thisInd = this.descMatrix[gen][pop];
-        if (thisInd.selected && gen != this.nGens - 1) {
+      for (let pop = 0; pop < this.popSize; pop++) {
+        let individual = this.descMatrix[gen][pop];
+        if (individual.selected && gen != this.nGens - 1) {
           coalSVG
             .append("line")
-            .attr("x1", thisInd.xPos / this.popSize * w + padding + 20)
-            .attr("x2", thisInd.parent.xPos / this.popSize * w + padding + 20)
+            .attr("x1", individual.xPos / this.popSize * w + padding + 20)
+            .attr("x2", individual.parent.xPos / this.popSize * w + padding + 20)
             .attr("y1", gen / this.nGens * h + padding)
             .attr("y2", (gen + 1) / this.nGens * h + padding)
             .attr("stroke", "red")
@@ -277,7 +259,7 @@ class coalescentHistory {
         }
       }
     } // Finish drawing lines of descent
-    for (var gen = 0; gen < this.nGens; gen++) {
+    for (let gen = 0; gen < this.nGens; gen++) {
       // Adds numeric labels for generations
       coalSVG
         .append("text")
@@ -288,7 +270,7 @@ class coalescentHistory {
         .attr("font-size", "12")
         .text(gen + 1);
     }
-    var timelineSVG = d3
+    let timelineSVG = d3
       .select("body") // Adding timeline to side of coalescent history
       .select(sectionID)
       .append("svg")
@@ -337,34 +319,34 @@ class coalescentHistory {
   }
 
   drawHistory(w, h, padding, sectionID) {
-    var coalSVG = d3
+    let coalSVG = d3
       .select("body")
       .select(sectionID)
       .append("svg")
       .attr("width", w)
       .attr("height", h);
-    for (var gen = 0; gen < this.nGens; gen++) {
-      for (var pop = 0; pop < this.popSize; pop++) {
-        var thisInd = this.descMatrix[gen][pop];
-        if (!thisInd.selected) {
+    for (let gen = 0; gen < this.nGens; gen++) {
+      for (let pop = 0; pop < this.popSize; pop++) {
+        let individual = this.descMatrix[gen][pop];
+        if (!individual.selected) {
           coalSVG
             .append("circle")
-            .attr("cx", thisInd.xPos / this.popSize * w + padding)
+            .attr("cx", individual.xPos / this.popSize * w + padding)
             .attr("cy", gen / this.nGens * h + padding)
             .attr("r", 10)
             .attr("fill", "blue");
-        } else if (thisInd.selected) {
+        } else if (individual.selected) {
           coalSVG
             .append("circle")
-            .attr("cx", thisInd.xPos / this.popSize * w + padding)
+            .attr("cx", individual.xPos / this.popSize * w + padding)
             .attr("cy", gen / this.nGens * h + padding)
             .attr("r", 10)
             .attr("fill", "red");
           if (gen != this.nGens - 1) {
             coalSVG
               .append("line")
-              .attr("x1", thisInd.xPos / this.popSize * w + padding)
-              .attr("x2", thisInd.parent.xPos / this.popSize * w + padding)
+              .attr("x1", individual.xPos / this.popSize * w + padding)
+              .attr("x2", individual.parent.xPos / this.popSize * w + padding)
               .attr("y1", gen / this.nGens * h + padding)
               .attr("y2", (gen + 1) / this.nGens * h + padding)
               .attr("stroke", "red")
@@ -409,13 +391,13 @@ class Model {
   // Function creates the instantaneous rate matrix from the base frequency and relative rate values
   buildRateMatrix() {
     // Calculate diagonal elements of rate matrix
-    var Adiag = -1 * (rates[0] * bf[1] + rates[1] * bf[2] + rates[2] * bf[3]);
-    var Cdiag = -1 * (rates[0] * bf[0] + rates[3] * bf[2] + rates[4] * bf[3]);
-    var Gdiag = -1 * (rates[1] * bf[0] + rates[3] * bf[1] + rates[5] * bf[3]);
-    var Tdiag = -1 * (rates[2] * bf[0] + rates[4] * bf[1] + rates[5] * bf[2]);
+    let Adiag = -1 * (rates[0] * bf[1] + rates[1] * bf[2] + rates[2] * bf[3]);
+    let Cdiag = -1 * (rates[0] * bf[0] + rates[3] * bf[2] + rates[4] * bf[3]);
+    let Gdiag = -1 * (rates[1] * bf[0] + rates[3] * bf[1] + rates[5] * bf[3]);
+    let Tdiag = -1 * (rates[2] * bf[0] + rates[4] * bf[1] + rates[5] * bf[2]);
 
     // Calculate the normalizing factor so that the negative average of the diagonals is 1
-    var norm = -1 * mean([Adiag, Cdiag, Gdiag, Tdiag]);
+    let norm = -1 * mean([Adiag, Cdiag, Gdiag, Tdiag]);
 
     // Calculate and return the full matrix as a 2D array (4x4 matrix)
     return [
@@ -447,17 +429,17 @@ class Model {
   }
 
   drawNewState(currentState) {
-    var rateVec = this.r[this.findStateIndex(currentState)];
-    var offDiagSum = 0;
-    var states = ["A", "C", "G", "T"];
+    let rateVec = this.r[this.findStateIndex(currentState)];
+    let offDiagSum = 0;
+    let states = ["A", "C", "G", "T"];
     states.splice(states.indexOf(currentState), 1);
-    var probs = [];
-    for (var i = 0; i < rateVec.length; i++) {
+    let probs = [];
+    for (let i = 0; i < rateVec.length; i++) {
       if (rateVec[i] > 0) {
         offDiagSum += rateVec[i];
       }
     }
-    for (var j = 0; j < rateVec.length; j++) {
+    for (let j = 0; j < rateVec.length; j++) {
       if (rateVec[j] > 0) {
         probs.push(rateVec[j] / offDiagSum);
       }
@@ -466,8 +448,8 @@ class Model {
   }
 
   drawWaitingTime(currentState) {
-    var stateIndex = this.findStateIndex(currentState);
-    var time = rexp(-1 * this.r[stateIndex][stateIndex]);
+    let stateIndex = this.findStateIndex(currentState);
+    let time = rexp(-1 * this.r[stateIndex][stateIndex]);
     return time;
   }
 
@@ -496,7 +478,7 @@ class Node {
         this.parent = parent;
         this.depth = parent.depth + 1; // Depth = # of nodes from root
       } else {
-        var parsedNodeStr = nodeStr.split(":");
+        let parsedNodeStr = nodeStr.split(":");
         this.name = parsedNodeStr[0];
         this.brl = parseFloat(parsedNodeStr[1]);
         this.desc = null;
@@ -512,7 +494,7 @@ class Node {
 
       // Record branch length and remove from node string
       if (hasBrl && name != "root") {
-        var lastColon = nodeStr.lastIndexOf(":");
+        let lastColon = nodeStr.lastIndexOf(":");
         this.brl = parseFloat(nodeStr.slice(lastColon + 1));
         nodeStr = nodeStr.slice(0, lastColon);
       } else if (hasBrl && name === "root") {
@@ -533,11 +515,11 @@ class Node {
       nodeStr = nodeStr.slice(1, nodeStr.length - 1);
 
       // Find positions of commas that separate descendants (2 or more)
-      var commaIndices = findSplitCommas(nodeStr);
+      let commaIndices = findSplitCommas(nodeStr);
 
       // Create descendant nodes
-      var descStrings = []; // Initialize array -> 1 string per descendant
-      for (var i = 0; i <= commaIndices.length; i++) {
+      let descStrings = []; // Initialize array -> 1 string per descendant
+      for (let i = 0; i <= commaIndices.length; i++) {
         if (i === 0) {
           // First descendant (need to start at index 0)
           descStrings.push(nodeStr.slice(0, commaIndices[i]));
@@ -550,7 +532,7 @@ class Node {
       }
 
       // Recursively call Node constructor for each descendant string
-      for (var j = 0; j < descStrings.length; j++) {
+      for (let j = 0; j < descStrings.length; j++) {
         // No names for internal nodes right now
         this.desc.push(new Node(descStrings[j], hasBrl, this, null));
       }
@@ -640,7 +622,7 @@ class AnimatedLineOverTree {
     //  - Probably a way to do this in d3 without this? Avoid selecting all lines?
     this.lineX = [];
     this.currentLines = document.querySelectorAll("line");
-    for (var i = 0; i < this.currentLines.length; i++) {
+    for (let i = 0; i < this.currentLines.length; i++) {
       this.lineX.push([
         this.currentLines[i].getAttribute("x1"),
         this.currentLines[i].getAttribute("x2")
@@ -656,7 +638,7 @@ class AnimatedLineOverTree {
     this.yMin = this.padding - this.padding / 2;
     this.yMax = h * this.scale + 3 * this.padding / 2;
 
-    var lineXlen = this.lineX.length;
+    let lineXlen = this.lineX.length;
 
     // Bind x coordinate data to all lines, and draw new line
     this.svg
@@ -710,7 +692,7 @@ class AnimatedLTT {
 
     this.svg = d3
       .select("body") // Adds new svg to body
-      .select('#visualization')
+      .select("#visualization")
       .append("svg")
       .attr("width", this.w)
       .attr("height", this.h)
@@ -722,9 +704,9 @@ class AnimatedLTT {
     // Removes duplicate x coordinates - most common for tips in an ultrametric tree
     // https://stackoverflow.com/questions/9229645/remove-duplicate-values-from-js-array
 
-    // Have to use this dummy variable, cleanedXvals, because "this." doesn't work
+    // Have to use this dummy letiable, cleanedXvals, because "this." doesn't work
     // inside of filter function.
-    var cleanedXvals = this.nodeXvals;
+    let cleanedXvals = this.nodeXvals;
     cleanedXvals = cleanedXvals.filter(function(item, pos) {
       return cleanedXvals.indexOf(item) == pos;
     });
@@ -739,7 +721,7 @@ class AnimatedLTT {
     // given x coordinate (i.e., the number of lineages that begin at the node(s) with
     // that coordinate).
     this.lineageCounts = [];
-    for (var z = 0; z < this.nodeXvals.length; z++) {
+    for (let z = 0; z < this.nodeXvals.length; z++) {
       this.lineageCounts.push(
         countLineages(this.tr.root, this.nodeXvals[z], 0)
       );
@@ -820,7 +802,7 @@ class AnimatedLTT {
 
 // ---------- ** Aliases for Probability Functions ** ----------
 
-var rexp = jStat.exponential.sample;
+let rexp = jStat.exponential.sample;
 
 // ---------------- ** Functions ** ----------------
 
@@ -839,10 +821,10 @@ function animateCircleDownCladogram(
   color = "black"
 ) {
   // Selects existing svg
-  var svg = d3.select("body").select("svg");
+  let svg = d3.select("body").select("svg");
 
   // Instantiates nodeset to keep track of nodes with associated shapes down tree
-  var nodeset = [tr.root];
+  let nodeset = [tr.root];
 
   // Sets up first circle at root
   svg
@@ -859,9 +841,9 @@ function animateCircleDownCladogram(
     .attr("r", radius)
     .attr("fill", color);
 
-  // This variable will be used to keep track of x-position for circles as they
+  // This letiable will be used to keep track of x-position for circles as they
   // move down the tree.
-  var currX = 0;
+  let currX = 0;
 
   svg.on("click", function() {
     // Start animation when click detected anywhere on svg
@@ -874,12 +856,12 @@ function animateCircleDownCladogram(
 // Function to calculate the number of tips in a tree
 
 function calcTipNum(node) {
-  var tipCount = 0;
+  let tipCount = 0;
   if (node.desc === null) {
     // Found tip
     tipCount = 1;
   } else {
-    for (var i = 0; i < node.desc.length; i++) {
+    for (let i = 0; i < node.desc.length; i++) {
       // Internal
       tipCount += calcTipNum(node.desc[i]);
     }
@@ -894,7 +876,7 @@ function calcTipNum(node) {
 // Arguments:
 //  - node: Initially expects the root node, then recursively moves through tree
 //  - xVal: The x coordinate for which lineages are being counted
-//  - count: Counter variable to keep track of number of lineages
+//  - count: Counter letiable to keep track of number of lineages
 
 function countLineages(node, xVal, count) {
   if (node.parent === null && node.x === xVal) {
@@ -904,7 +886,7 @@ function countLineages(node, xVal, count) {
     count++;
   }
   if (node.desc != null) {
-    for (var i = 0; i < node.desc.length; i++) {
+    for (let i = 0; i < node.desc.length; i++) {
       count = countLineages(node.desc[i], xVal, count);
     }
   }
@@ -916,8 +898,8 @@ function countLineages(node, xVal, count) {
 // Utility function to count the number of a particular state (st) in an array (arr)
 
 function countStateInArray(st, arr) {
-  var count = 0;
-  for (var i = 0; i < arr.length; i++) {
+  let count = 0;
+  for (let i = 0; i < arr.length; i++) {
     if (arr[i] == st) {
       count++;
     }
@@ -942,7 +924,7 @@ Tree.prototype.drawCladogram = function(
   tipLabels = false,
   fSize = 6
 ) {
-  var svg = d3
+  let svg = d3
     .select("body") // Adds svg to body
     .append("svg")
     .attr("width", w)
@@ -998,7 +980,7 @@ function drawLTTLines(
 function drawNodeLines(node, svg, w, h, color, lwd, scale = 0.9, padding = 30) {
   if (node.desc != null) {
     // Operates on internal nodes - lines drawn parent -> desc
-    for (var i = 0; i < node.desc.length; i++) {
+    for (let i = 0; i < node.desc.length; i++) {
       svg
         .append("line") // Vertical lines
         .attr("x1", node.x * w * scale + padding)
@@ -1056,7 +1038,7 @@ function drawNodeLinesWithHistory(
 ) {
   if (node.desc != null) {
     // Operates on internal nodes - lines drawn parent -> desc
-    for (var i = 0; i < node.desc.length; i++) {
+    for (let i = 0; i < node.desc.length; i++) {
       svg
         .append("line") // Vertical lines
         .attr("x1", node.x * w * scale + padding)
@@ -1069,15 +1051,15 @@ function drawNodeLinesWithHistory(
         )
         .attr("stroke-width", lwd);
 
-      var waitTimeSum = 0;
-      var adj = (node.desc[i].x - node.x) / node.desc[i].brl;
+      let waitTimeSum = 0;
+      let adj = (node.desc[i].x - node.x) / node.desc[i].brl;
       node.desc[i].scaledWaitingTimes = [];
-      for (var t = 0; t < node.desc[i].waitingTimes.length; t++) {
+      for (let t = 0; t < node.desc[i].waitingTimes.length; t++) {
         node.desc[i].scaledWaitingTimes.push(
           node.desc[i].waitingTimes[t] * adj
         );
       }
-      for (var st = 0; st < node.desc[i].states.length; st++) {
+      for (let st = 0; st < node.desc[i].states.length; st++) {
         if (Math.abs(node.x - node.desc[i].x) > 0.001) {
           if (
             waitTimeSum + node.desc[i].scaledWaitingTimes[st] <
@@ -1169,9 +1151,9 @@ function drawPhylogram(
   padding = 30,
   tipLabels = false
 ) {
-  var svg = d3
+  let svg = d3
     .select("body") // Adds svg to body
-    .select('#visualization')
+    .select("#visualization")
     .append("svg")
     .attr("width", w)
     .attr("height", h)
@@ -1217,7 +1199,7 @@ function drawPhylogramWithHistory(
   padding = 30,
   tipLabels = false
 ) {
-  var svg = d3
+  let svg = d3
     .select("body") // Adds svg to body
     .append("svg")
     .attr("width", w)
@@ -1276,7 +1258,7 @@ Tree.prototype.drawTipLabels = function(
 ) {
   if (node.desc != null) {
     // Internal node
-    for (var i = 0; i < node.desc.length; i++) {
+    for (let i = 0; i < node.desc.length; i++) {
       // Recursively call descendant nodes
       this.drawTipLabels(node.desc[i], svg, w, h, scale, padding, fSize);
     }
@@ -1305,7 +1287,7 @@ Tree.prototype.drawTipLabels = function(
 function extractNodeXVals(node, xVals) {
   xVals.push(node.x);
   if (node.desc != null) {
-    for (var i = 0; i < node.desc.length; i++) {
+    for (let i = 0; i < node.desc.length; i++) {
       xVals = extractNodeXVals(node.desc[i], xVals);
     }
   }
@@ -1319,10 +1301,10 @@ function extractNodeXVals(node, xVals) {
 // Root depth = 0, root's descendant's depth = 1, etc.
 
 function findMaxNodeDepth(node) {
-  var maxDepth = node.depth; // Records depth of node
+  let maxDepth = node.depth; // Records depth of node
   if (node.desc != null) {
-    for (var i = 0; i < node.desc.length; i++) {
-      var descMax = findMaxNodeDepth(node.desc[i]); // Recursive call to find max
+    for (let i = 0; i < node.desc.length; i++) {
+      let descMax = findMaxNodeDepth(node.desc[i]); // Recursive call to find max
       if (descMax > maxDepth) {
         // depth of descendants.
         maxDepth = descMax; // Overwrites node depth if descendant depth greater
@@ -1338,10 +1320,10 @@ function findMaxNodeDepth(node) {
 // Root distance is the combined length of all branches from root to tip
 
 function findMaxRootDist(node) {
-  var maxDist = node.rootDist; // Records depth of node
+  let maxDist = node.rootDist; // Records depth of node
   if (node.desc != null) {
-    for (var i = 0; i < node.desc.length; i++) {
-      var descMax = findMaxRootDist(node.desc[i]); // Recursive call to find max
+    for (let i = 0; i < node.desc.length; i++) {
+      let descMax = findMaxRootDist(node.desc[i]); // Recursive call to find max
       if (descMax > maxDist) {
         // depth of descendants.
         maxDist = descMax; // Overwrites node depth if descendant depth greater
@@ -1357,8 +1339,8 @@ function findMaxRootDist(node) {
 // Used when animating objects down a tree
 
 function findMinX(d) {
-  var min = d[0].x;
-  for (var i in d) {
+  let min = d[0].x;
+  for (let i in d) {
     if (d[i].x < min) {
       min = d[i].x;
     }
@@ -1371,12 +1353,12 @@ function findMinX(d) {
 // Function to find positions of commas to split string for internal nodes
 
 function findSplitCommas(nodeStr) {
-  var commaIndices = [];
+  let commaIndices = [];
 
   // Parentheses counters
-  var parCount = 0;
+  let parCount = 0;
 
-  for (var i = 0; i <= nodeStr.length; i++) {
+  for (let i = 0; i <= nodeStr.length; i++) {
     // Keeping track of parentheses
     if (nodeStr[i] == "(") {
       parCount++;
@@ -1411,7 +1393,7 @@ function findStateIndex(st) {
 
 // Function for d3 to bind DOM objects to nodes by ID
 
-var key = function(node) {
+let key = function(node) {
   return node.id;
 };
 
@@ -1437,7 +1419,7 @@ function labelNodes(node, IDs) {
       node.id = IDs[1];
       IDs[1]++;
     }
-    for (var i = 0; i < node.desc.length; i++) {
+    for (let i = 0; i < node.desc.length; i++) {
       // Recurse through descendants
       IDs = labelNodes(node.desc[i], IDs);
     }
@@ -1449,8 +1431,8 @@ function labelNodes(node, IDs) {
 // Utility function to calculate the mean of numbers in an array
 
 function mean(nums) {
-  var avg = 0;
-  for (var i = 0; i < nums.length; i++) {
+  let avg = 0;
+  for (let i = 0; i < nums.length; i++) {
     avg += nums[i];
   }
   avg = avg / nums.length;
@@ -1464,7 +1446,7 @@ function mean(nums) {
 //    finalX - Right-most position for line to move
 
 function moveLine(lineX, svg, finalX, moveTime) {
-  var lines = svg.selectAll("line");
+  let lines = svg.selectAll("line");
 
   lineX[lineX.length - 1][0] = finalX;
   lineX[lineX.length - 1][1] = finalX;
@@ -1498,20 +1480,20 @@ function moveLine(lineX, svg, finalX, moveTime) {
 function moveCirclesCladogram(nodeset, svg, currX, tipNum, moveTime) {
   // New array to hold nodes that will be added to nodeset (descendants of some
   // current nodes).
-  var newNodes = [];
+  let newNodes = [];
 
   // New array to hold nodeset indices for nodes to be removed from nodeset (those
   // that are ancestors to nodes added to newNodes).
-  var toSplice = [];
+  let toSplice = [];
 
   // This loop iterates through nodes currently in nodeset. When it finds an internal
   // node, it adds the node's descendants to newNodes and records the node's index in
   // toSplice.
-  for (var i = 0; i < nodeset.length; i++) {
+  for (let i = 0; i < nodeset.length; i++) {
     if (nodeset[i].desc != null) {
       // Internal nodes
       toSplice.push(i);
-      for (var j = 0; j < nodeset[i].desc.length; j++) {
+      for (let j = 0; j < nodeset[i].desc.length; j++) {
         newNodes.push(nodeset[i].desc[j]);
       }
     }
@@ -1519,7 +1501,7 @@ function moveCirclesCladogram(nodeset, svg, currX, tipNum, moveTime) {
 
   // Loops through indices in toSplice and removes nodes from nodeset.
   // Starts with larger indices (at end of nodeset), so as not to alter smaller indices.
-  for (var k = toSplice.length - 1; k >= 0; k--) {
+  for (let k = toSplice.length - 1; k >= 0; k--) {
     nodeset.splice(toSplice[k], 1);
   }
 
@@ -1528,10 +1510,10 @@ function moveCirclesCladogram(nodeset, svg, currX, tipNum, moveTime) {
 
   // Finds next x position based on minimum of x positions of new nodes
   // Actually, for cladogram these should all be the same...
-  var minX = findMinX(newNodes);
+  let minX = findMinX(newNodes);
 
   // Sets d3 selection set by binding updated nodeset (uses node id as key - see key())
-  var circles = svg.selectAll("circle").data(nodeset, key);
+  let circles = svg.selectAll("circle").data(nodeset, key);
 
   // Gets rid of svg circles for nodes removed from nodeset
   circles.exit().remove();
@@ -1597,10 +1579,10 @@ function moveCirclesCladogram(nodeset, svg, currX, tipNum, moveTime) {
 // Draw from a multinomial distribution of arbitrary size
 
 function multiDraw(values, probs) {
-  var value = null;
-  var totalProb = 0;
-  var unifDraw = Math.random();
-  for (var i = 0; i < probs.length; i++) {
+  let value = null;
+  let totalProb = 0;
+  let unifDraw = Math.random();
+  for (let i = 0; i < probs.length; i++) {
     totalProb += probs[i];
     if (unifDraw <= totalProb) {
       value = values[i];
@@ -1617,7 +1599,7 @@ function multiDraw(values, probs) {
 
 function printTermXVals(node) {
   if (node.desc != null) {
-    for (var i = 0; i < node.desc.length; i++) {
+    for (let i = 0; i < node.desc.length; i++) {
       printTermXVals(node.desc[i]);
     }
   } else {
@@ -1651,12 +1633,12 @@ Tree.prototype.setCladogramXY = function(node, termCount, maxDepth) {
 
   if (node.desc != null) {
     // Internal node
-    for (var i = 0; i < node.desc.length; i++) {
+    for (let i = 0; i < node.desc.length; i++) {
       termCount = this.setCladogramXY(node.desc[i], termCount, maxDepth);
     }
     node.x = node.depth / maxDepth; // Uses pre-existing depth to set x coordinate
-    var sumDescY = 0;
-    for (var j = 0; j < node.desc.length; j++) {
+    let sumDescY = 0;
+    for (let j = 0; j < node.desc.length; j++) {
       sumDescY += node.desc[j].y;
     }
     node.y = sumDescY / node.desc.length; // Averages y-positions of descendants to plot
@@ -1686,12 +1668,12 @@ function setPhylogramXY(node, termCount, tipNum, maxDist) {
 
   if (node.desc != null) {
     // Internal node
-    for (var i = 0; i < node.desc.length; i++) {
+    for (let i = 0; i < node.desc.length; i++) {
       termCount = setPhylogramXY(node.desc[i], termCount, tipNum, maxDist);
     }
     node.x = node.rootDist / maxDist; // Uses pre-existing rootDist to set x coordinate
-    var sumDescY = 0;
-    for (var j = 0; j < node.desc.length; j++) {
+    let sumDescY = 0;
+    for (let j = 0; j < node.desc.length; j++) {
       sumDescY += node.desc[j].y;
     }
     node.y = sumDescY / node.desc.length; // Averages y-positions of descendants to plot
@@ -1714,8 +1696,8 @@ function setPhylogramXY(node, termCount, tipNum, maxDist) {
 // --------------------------------------------------
 
 function sum(values) {
-  var total = 0;
-  for (var i = 0; i < values.length; i++) {
+  let total = 0;
+  for (let i = 0; i < values.length; i++) {
     total += values[i];
   }
   return total;
