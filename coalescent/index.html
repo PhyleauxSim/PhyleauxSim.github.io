@@ -23,10 +23,14 @@
   .slider.slider-horizontal .tooltip.tooltip-main.in,
   .slider.slider-vertical .tooltip.tooltip-main.in 
   { opacity: .55 !important; background: transparent; }
+  .slider-wrapper{
+    margin-top:25px;
+  }
   footer{
     background-color: #424949;
     color: #99A3A4;
     text-align: center;
+    padding: 20px;
     }
   .title{
     height: auto;
@@ -60,15 +64,21 @@
             <div class="col-wrapper">
                <div class="form-group">
                 <label class="font-weight-bold">Population Size</label>
-                <input id="ex8" data-slider-id='ex1Slider' type="text" data-slider-min="15" data-slider-max="30" data-slider-step="1" data-slider-value="17"/>
+                <div class="slider-wrapper">
+                  <input id="ex8" data-slider-id='ex1Slider' type="text" data-slider-min="15" data-slider-max="30" data-slider-step="1" data-slider-value="17"/>
+                </div>
               </div>
                <div class="form-group">
                 <label class="font-weight-bold">Sample Size</label>
-                <input id="ex9" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="15" data-slider-step="1" data-slider-value="5"/>
+                <div class="slider-wrapper">
+                  <input id="ex9" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="15" data-slider-step="1" data-slider-value="5"/>
+                </div>
               </div>
                <div class="form-group">
                 <label class="font-weight-bold">Number of Generations</label>
-                <input id="ex10" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="30" data-slider-step="5" data-slider-value="20"/>
+                <div class="slider-wrapper">
+                  <input id="ex10" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="30" data-slider-step="5" data-slider-value="20"/>
+                </div>
               </div>
               <div class="form-group">
                 <button class="btn btn-primary" onclick="drawCoalescentTree()">Redraw</button>
