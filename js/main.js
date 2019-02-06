@@ -7,13 +7,13 @@ const sampleSizeSlider = new Slider("#ex9", {
 const numGenSlider = new Slider("#ex10", {
   tooltip: "always"
 });
-popSizeSlider.on("slide", event => {
+popSizeSlider.on("change", event => {
   drawCoalescentTree();
 });
-sampleSizeSlider.on("slide", event => {
+sampleSizeSlider.on("change", event => {
   drawCoalescentTree();
 });
-numGenSlider.on("slide", event => {
+numGenSlider.on("change", event => {
   drawCoalescentTree();
 });
 function drawCoalescentTree() {
