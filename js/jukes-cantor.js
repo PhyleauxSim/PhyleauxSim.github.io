@@ -1,5 +1,13 @@
+const branchLengthSlider = new Slider("#ex9", {
+  tooltip: "always"
+});
+
+branchLengthSlider.on('change', function({newValue}){
+  showValueAppendScale(newValue);
+})
+
 function showValueAppendScale(val) {
-  document.getElementById("brl").innerHTML = val;
+  // document.getElementById("brl").innerHTML = val;
   appendScale(val);
 }
 
@@ -52,7 +60,7 @@ function appendScale(val) {
   d3.select("#histories").append("br");
 }
 
-let myModel = new Model(
+let model = new Model(
   (bf = [0.25, 0.25, 0.25, 0.25]),
   (rates = [1, 1, 1, 1, 1, 1]),
   (gammaRates = true),
@@ -61,7 +69,7 @@ let myModel = new Model(
   (i = 0)
 );
 
-let myCharHistory = new characterHistory((model = myModel));
+let myCharHistory = new characterHistory((model = model));
 
 let startState = document.getElementById("fixStart").checked ? "A" : null;
 
@@ -76,16 +84,16 @@ d3.select("#clearCharHists").on("click", function() {
     .select("#histories")
     .selectAll("br")
     .remove();
-  let brl = parseFloat(d3.select("#brlSlider").property("value"));
-  appendScale(brl);
+  const branchLength = parseFloat(branchLengthSlider.getValue());
+  appendScale(branchLength);
 });
 
 d3.select("#drawCharHist").on("click", function() {
-  let brl = parseFloat(d3.select("#brlSlider").property("value"));
-  myCharHistory.sampleHistory(brl, startState);
+  const branchLength = parseFloat(branchLengthSlider.getValue());
+  myCharHistory.sampleHistory(branchLength, startState);
   let plotSvg = d3.select("#histories").append("svg");
   myCharHistory.drawHistory(
-    brl,
+    branchLength,
     (w = 800),
     (h = 30),
     (svg = plotSvg),
@@ -137,5 +145,5 @@ d3.select("#drawCharHist").on("click", function() {
 
   d3.select("#histories").append("br");
 });
-d3.select("#brlSlider").property("value", 1.0);
-showValueAppendScale(1.0);
+// d3.select("#brlSlider").property("value", 1.0);
+showValueAppendScale(branchLengthSlider.getValue());
