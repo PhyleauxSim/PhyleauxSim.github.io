@@ -1,21 +1,21 @@
-const popSizeSlider = new Slider("#ex8", {
+const popSizeSlider = new Slider("#population-size", {
   tooltip: "always"
 });
-const sampleSizeSlider = new Slider("#ex9", {
+const sampleSizeSlider = new Slider("#sample-size", {
   tooltip: "always"
 });
-const numGenSlider = new Slider("#ex10", {
+const numGenSlider = new Slider("#number-of-generations", {
   tooltip: "always"
 });
-popSizeSlider.on("change", event => {
-  drawCoalescentTree();
-});
-sampleSizeSlider.on("change", event => {
-  drawCoalescentTree();
-});
-numGenSlider.on("change", event => {
-  drawCoalescentTree();
-});
+
+const sliders = [sampleSizeSlider, popSizeSlider, numGenSlider];
+
+for(let i = 0; i < sliders.length; i++){
+  sliders[i].on('change', function(event){
+    drawCoalescentTree();
+  })
+}
+
 function drawCoalescentTree() {
   // Setting plotting defaults
   const svgWidth = 0.57 * window.innerWidth;
