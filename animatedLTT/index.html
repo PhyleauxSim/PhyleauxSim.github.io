@@ -110,10 +110,10 @@
         <script type="text/javascript">
                 const heightSlider = new Slider("#height", {tooltip: "always"});
                 const animationSlider = new Slider("#animation", {tooltip: "always"});
-                heightSlider.on('slide', (event) => {
+                heightSlider.on('change', (event) => {
                     draw()
                 })
-                animationSlider.on('slide', (event) => {
+                animationSlider.on('change', (event) => {
                     draw()
                 })
                 // Initializing height and tree variables
