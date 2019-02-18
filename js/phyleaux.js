@@ -184,9 +184,11 @@ class coalescentHistory {
   sampleHistory() {
     let numSelections = 0;
     while (numSelections < this.sampleSize) {
-      let selectedIndividual = Math.floor(Math.random() * this.popSize);	// Select individuals from most recent generation
-      this.descMatrix[0][selectedIndividual].selected = true;  				// Update flag for selected individuals
-      numSelections++;										 				// Increment the number of selections made
+      let selectedIndividual = Math.floor(Math.random() * this.popSize);		// Select individuals from most recent generation
+      if (!this.descMatrix[0][selectedIndividual].selected){
+      	this.descMatrix[0][selectedIndividual].selected = true;  				// Update flag for selected individuals
+      	numSelections++;										 				// Increment the number of selections made
+      }
     }
     for (let g = 1; g < this.nGens; g++) {
       for (let i = 0; i < this.popSize; i++) {
@@ -243,36 +245,14 @@ class coalescentHistory {
     	}
     }
     
-    // Draw circles for individuals
-    for (let gen = 0; gen < this.nGens; gen++) {
-      for (let pop = 0; pop < this.popSize; pop++) {
-        let individual = this.descMatrix[gen][pop];
-        if (individual.selected) {
-          coalSVG
-            .append("circle")
-            .attr("cx", individual.xPos / this.popSize * w + padding + 20)
-            .attr("cy", gen / this.nGens * h + padding)
-            .attr("r", 10)
-            .attr("fill", "red");
-        } else {
-          coalSVG
-            .append("circle")
-            .attr("cx", individual.xPos / this.popSize * w + padding + 20)
-            .attr("cy", gen / this.nGens * h + padding)
-            .attr("r", 10)
-            .attr("fill", "blue");
-        }
-      }
-    } 
-    
     // Draw lines of descent
-    // How are these animated?
+    // Drawing these lines first so that Vivus animation gets started without a delay
     for (let gen = 0; gen < this.nGens; gen++) {
       for (let pop = 0; pop < this.popSize; pop++) {
         let individual = this.descMatrix[gen][pop];
         if (individual.selected && gen != this.nGens - 1) {
-          const x1 = individual.xPos / this.popSize * w + padding + 20;
-          const x2 = individual.parent.xPos / this.popSize * w + padding + 20;
+          const x1 = individual.xPos / (this.popSize*1.05) * w + padding + 20;
+          const x2 = individual.parent.xPos / (this.popSize*1.05) * w + padding + 20;
           const y1 = gen / this.nGens * h + padding;
           const y2 = (gen + 1) / this.nGens * h + padding;
           coalSVG
@@ -287,11 +267,33 @@ class coalescentHistory {
       }
     }
     
+    // Draw circles for individuals
+    for (let gen = 0; gen < this.nGens; gen++) {
+      for (let pop = 0; pop < this.popSize; pop++) {
+        let individual = this.descMatrix[gen][pop];
+        if (individual.selected) {
+          coalSVG
+            .append("circle")
+            .attr("cx", individual.xPos / (this.popSize*1.05) * w + padding + 20)
+            .attr("cy", gen / this.nGens * h + padding)
+            .attr("r", Math.floor(10 * 18/this.popSize))
+            .attr("fill", "red");
+        } else {
+          coalSVG
+            .append("circle")
+            .attr("cx", individual.xPos / (this.popSize*1.05) * w + padding + 20)
+            .attr("cy", gen / this.nGens * h + padding)
+            .attr("r", Math.floor(10 * 18/this.popSize))
+            .attr("fill", "blue");
+        }
+      }
+    } 
+        
     // Adds numeric labels for generations
     for (let gen = 0; gen < this.nGens; gen++) {
       coalSVG
         .append("text")
-        .attr("x", 10)
+        .attr("x", 5)
         .attr("y", gen / this.nGens * h + padding + 5)
         .attr("text-anchor", "middle")
         .attr("font-family", "Glober")

@@ -39,5 +39,5 @@ function drawCoalescentTree() {
 
   history.drawSortedHistory(svgWidth, svgHeight, padding, "#visualization");
 
-   const v = new Vivus('vis', {type: 'oneByOne', start: 'autostart', animTimingFunction: Vivus.EASE})
+  const v = new Vivus('vis', {type: 'oneByOne', start: 'autostart', duration: 700, animTimingFunction: Vivus.EASE})
 }
