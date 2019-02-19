@@ -356,29 +356,31 @@ class coalescentHistory {
       .select(sectionID)
       .append("svg")
       .attr("width", w)
-      .attr("height", h);
+      .attr("height", h)
+      .attr("id", "vis");
+      
     for (let gen = 0; gen < this.nGens; gen++) {
       for (let pop = 0; pop < this.popSize; pop++) {
         let individual = this.descMatrix[gen][pop];
         if (!individual.selected) {
           coalSVG
             .append("circle")
-            .attr("cx", individual.xPos / this.popSize * w + padding)
+            .attr("cx", individual.xPos / (this.popSize*1.05) * w + padding + 20)
             .attr("cy", gen / this.nGens * h + padding)
-            .attr("r", 10)
+            .attr("r", Math.floor(10 * 18/this.popSize))
             .attr("fill", "blue");
         } else if (individual.selected) {
           coalSVG
             .append("circle")
-            .attr("cx", individual.xPos / this.popSize * w + padding)
+            .attr("cx", individual.xPos / (this.popSize*1.05) * w + padding + 20)
             .attr("cy", gen / this.nGens * h + padding)
-            .attr("r", 10)
+            .attr("r", Math.floor(10 * 18/this.popSize))
             .attr("fill", "red");
           if (gen != this.nGens - 1) {
             coalSVG
               .append("line")
-              .attr("x1", individual.xPos / this.popSize * w + padding)
-              .attr("x2", individual.parent.xPos / this.popSize * w + padding)
+              .attr("x1", individual.xPos / (this.popSize*1.05) * w + padding + 20)
+              .attr("x2", individual.parent.xPos / (this.popSize*1.05) * w + padding + 20)
               .attr("y1", gen / this.nGens * h + padding)
               .attr("y2", (gen + 1) / this.nGens * h + padding)
               .attr("stroke", "red")
@@ -387,6 +389,18 @@ class coalescentHistory {
         }
       }
     }
+    
+    // Adds numeric labels for generations
+    for (let gen = 0; gen < this.nGens; gen++) {
+      coalSVG
+        .append("text")
+        .attr("x", 5)
+        .attr("y", gen / this.nGens * h + padding + 5)
+        .attr("text-anchor", "middle")
+        .attr("font-family", "Glober")
+        .attr("font-size", "12")
+        .text(gen + 1);
+    }    
   }
 }
 
