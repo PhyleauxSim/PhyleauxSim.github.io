@@ -192,14 +192,64 @@ class coalescentHistory {
     }
     for (let g = 1; g < this.nGens; g++) {
       for (let i = 0; i < this.popSize; i++) {
-        if (this.descMatrix[g - 1][i].selected) {
           let parentIndex = Math.floor(Math.random() * this.popSize);  			// Randomly choose parental allele from previous generation
           this.descMatrix[g - 1][i].parent = this.descMatrix[g][parentIndex];	// Set parent pointer for descendant
           this.descMatrix[g][parentIndex].desc.push(this.descMatrix[g - 1][i]);	// Add descendant to parent
-          this.descMatrix[g][parentIndex].selected = true;						// Turn on 'selected' flag for parent
-        }
+          if (this.descMatrix[g - 1][i].selected) {
+            this.descMatrix[g][parentIndex].selected = true;					// Turn on 'selected' flag for selected parents
+          }
       }
     }
+  }
+
+    // Adding timeline to side of coalescent history
+  drawTimeline(w, h, padding, sectionID){
+    let timelineSVG = d3
+      .select("body") 
+      .select(sectionID)
+      .append("svg")
+      .attr("width", 80)
+      .attr("height", h);
+    timelineSVG				// Add 'Present' label
+      .append("text")
+      .attr("x", 40)
+      .attr("y", padding + 5)
+      .attr("text-anchor", "middle")
+      .attr("font-family", "Glober")
+      .attr("font-size", "22")
+      .text("Present");
+    timelineSVG				// Add 'Past' label
+      .append("text")
+      .attr("x", 40)
+      .attr("y", (this.nGens - 1) / this.nGens * h + padding + 5)
+      .attr("text-anchor", "middle")
+      .attr("font-family", "Glober")
+      .attr("font-size", "22")
+      .text("Past");
+    timelineSVG				// Vertical line in arrow
+      .append("line")
+      .attr("x1", 40)
+      .attr("x2", 40)
+      .attr("y1", padding + 15)
+      .attr("y2", (this.nGens - 2) / this.nGens * h + padding + 5)
+      .attr("stroke", "black")
+      .attr("stroke-width", 2);
+    timelineSVG				// First arrowhead line
+      .append("line")
+      .attr("x1", 30)
+      .attr("x2", 40)
+      .attr("y1", (this.nGens - 2.5) / this.nGens * h + padding + 5)
+      .attr("y2", (this.nGens - 2) / this.nGens * h + padding + 5)
+      .attr("stroke", "black")
+      .attr("stroke-width", 2);
+    timelineSVG				// Second arrowhead line
+      .append("line")
+      .attr("x1", 50)
+      .attr("x2", 40)
+      .attr("y1", (this.nGens - 2.5) / this.nGens * h + padding + 5)
+      .attr("y2", (this.nGens - 2) / this.nGens * h + padding + 5)
+      .attr("stroke", "black")
+      .attr("stroke-width", 2);
   }
 
   drawSortedHistory(w, h, padding, sectionID) {
@@ -301,53 +351,114 @@ class coalescentHistory {
         .text(gen + 1);
     }
     
-    // Adding timeline to side of coalescent history
-    let timelineSVG = d3
+    this.drawTimeline(w,h,padding,sectionID);
+    
+  }
+
+  drawFullPopHistory(w, h, padding, sectionID) {
+    let coalSVG = d3
       .select("body") 
       .select(sectionID)
-      .append("svg")
-      .attr("width", 80)
-      .attr("height", h);
-    timelineSVG				// Add 'Present' label
-      .append("text")
-      .attr("x", 40)
-      .attr("y", padding + 5)
-      .attr("text-anchor", "middle")
-      .attr("font-family", "Glober")
-      .attr("font-size", "22")
-      .text("Present");
-    timelineSVG				// Add 'Past' label
-      .append("text")
-      .attr("x", 40)
-      .attr("y", (this.nGens - 1) / this.nGens * h + padding + 5)
-      .attr("text-anchor", "middle")
-      .attr("font-family", "Glober")
-      .attr("font-size", "22")
-      .text("Past");
-    timelineSVG				// Vertical line in arrow
-      .append("line")
-      .attr("x1", 40)
-      .attr("x2", 40)
-      .attr("y1", padding + 15)
-      .attr("y2", (this.nGens - 2) / this.nGens * h + padding + 5)
-      .attr("stroke", "black")
-      .attr("stroke-width", 2);
-    timelineSVG				// First arrowhead line
-      .append("line")
-      .attr("x1", 30)
-      .attr("x2", 40)
-      .attr("y1", (this.nGens - 2.5) / this.nGens * h + padding + 5)
-      .attr("y2", (this.nGens - 2) / this.nGens * h + padding + 5)
-      .attr("stroke", "black")
-      .attr("stroke-width", 2);
-    timelineSVG				// Second arrowhead line
-      .append("line")
-      .attr("x1", 50)
-      .attr("x2", 40)
-      .attr("y1", (this.nGens - 2.5) / this.nGens * h + padding + 5)
-      .attr("y2", (this.nGens - 2) / this.nGens * h + padding + 5)
-      .attr("stroke", "black")
-      .attr("stroke-width", 2);
+      .append("svg")  // Create new svg
+      .attr("width", w)
+      .attr("height", h)
+      .attr("id", "vis");
+    
+    // Sort x positions of individuals so lines of descent don't cross
+    for (let g = this.nGens-2; g >= 0; g--){	// Start with next-to-last generation and move to present
+    	let swaps = true;
+    	while (swaps){		// Keep swapping as long as swaps are happening
+    		swaps = false;	// Set to false unless swap happens
+			for (let i = 0; i < this.popSize-1; i++){	// Nested loops to compare all selected individuals
+				for (let j = i+1; j < this.popSize; j++){
+					if (((this.descMatrix[g][i].xPos < this.descMatrix[g][j].xPos) && 	// Look for mismatched ordering between positions of descendants and parents
+						(this.descMatrix[g][i].parent.xPos > this.descMatrix[g][j].parent.xPos)) || 
+						((this.descMatrix[g][i].xPos > this.descMatrix[g][j].xPos) &&
+						(this.descMatrix[g][i].parent.xPos < this.descMatrix[g][j].parent.xPos))){
+							let tempX = this.descMatrix[g][i].xPos;		// Perform swap
+							this.descMatrix[g][i].xPos = this.descMatrix[g][j].xPos;
+							this.descMatrix[g][j].xPos = tempX;
+							swaps = true;
+					}
+				}
+			}
+    	}
+    }
+    
+    // Draw lines of descent
+    /*for (let gen = 0; gen < this.nGens; gen++) {
+      for (let pop = 0; pop < this.popSize; pop++) {
+        let individual = this.descMatrix[gen][pop];
+        if (gen != this.nGens - 1) {
+          const x1 = individual.xPos / (this.popSize*1.05) * w + padding + 20;
+          const x2 = individual.parent.xPos / (this.popSize*1.05) * w + padding + 20;
+          const y1 = gen / this.nGens * h + padding;
+          const y2 = (gen + 1) / this.nGens * h + padding;
+          coalSVG
+            .append("line")
+            .attr("x1", x1)
+            .attr("x2", x2)
+            .attr("y1", y1)
+            .attr("y2", y2)
+            .attr("stroke", "blue")
+            .attr("stroke-width", 2);    
+        }
+      }
+    }*/
+    
+    for (let gen = this.nGens-1; gen >= 0; gen--){
+    	for (let pop = 0; pop < this.popSize; pop++){
+    		let individual = this.descMatrix[gen][pop];
+    		if (gen == this.nGens-1){
+    			let redVal = Math.floor(Math.random()*255);
+    			let greenVal = Math.floor(Math.random()*255);
+    			let blueVal = Math.floor(Math.random()*255);
+    			individual.color = "rgb(".concat(String(redVal),",",String(greenVal),",",String(blueVal),")");
+    		} else {
+    			individual.color = individual.parent.color;
+        		const x1 = individual.xPos / (this.popSize*1.05) * w + padding + 20;
+          		const x2 = individual.parent.xPos / (this.popSize*1.05) * w + padding + 20;
+          		const y1 = gen / this.nGens * h + padding;
+          		const y2 = (gen + 1) / this.nGens * h + padding;
+          		coalSVG
+           		 .append("line")
+            	 .attr("x1", x1)
+           		 .attr("x2", x2)
+           		 .attr("y1", y1)
+           		 .attr("y2", y2)
+           		 .attr("stroke", individual.parent.color)
+           		 .attr("stroke-width", 2);       			
+    		}
+    	}
+    }
+    
+    // Draw circles for individuals
+    for (let gen = 0; gen < this.nGens; gen++) {
+      for (let pop = 0; pop < this.popSize; pop++) {
+          let individual = this.descMatrix[gen][pop];
+          coalSVG
+          .append("circle")
+          .attr("cx", individual.xPos / (this.popSize*1.05) * w + padding + 20)
+          .attr("cy", gen / this.nGens * h + padding)
+          .attr("r", Math.floor(10 * 18/this.popSize))
+          .attr("fill", individual.color);
+      }
+    } 
+        
+    // Adds numeric labels for generations
+    for (let gen = 0; gen < this.nGens; gen++) {
+      coalSVG
+        .append("text")
+        .attr("x", 5)
+        .attr("y", gen / this.nGens * h + padding + 5)
+        .attr("text-anchor", "middle")
+        .attr("font-family", "Glober")
+        .attr("font-size", "12")
+        .text(gen + 1);
+    }
+
+	this.drawTimeline(w,h,padding,sectionID);    
+
   }
 
   drawHistory(w, h, padding, sectionID) {
@@ -358,6 +469,28 @@ class coalescentHistory {
       .attr("width", w)
       .attr("height", h)
       .attr("id", "vis");
+      
+	// Sort x positions of individuals so lines of descent don't cross
+    for (let g = this.nGens-2; g >= 0; g--){	// Start with next-to-last generation and move to present
+    	let swaps = true;
+    	while (swaps){		// Keep swapping as long as swaps are happening
+    		swaps = false;	// Set to false unless swap happens
+			for (let i = 0; i < this.popSize-1; i++){	// Nested loops to compare all selected individuals
+				for (let j = i+1; j < this.popSize; j++){
+					if (((this.descMatrix[g][i].xPos < this.descMatrix[g][j].xPos) && 	// Look for mismatched ordering between positions of descendants and parents
+						(this.descMatrix[g][i].parent.xPos > this.descMatrix[g][j].parent.xPos)) || 
+						((this.descMatrix[g][i].xPos > this.descMatrix[g][j].xPos) &&
+						(this.descMatrix[g][i].parent.xPos < this.descMatrix[g][j].parent.xPos))){
+							let tempX = this.descMatrix[g][i].xPos;		// Perform swap
+							this.descMatrix[g][i].xPos = this.descMatrix[g][j].xPos;
+							this.descMatrix[g][j].xPos = tempX;
+							swaps = true;
+					}
+				}
+			}
+    	}
+    }
+
       
     for (let gen = 0; gen < this.nGens; gen++) {
       for (let pop = 0; pop < this.popSize; pop++) {
@@ -401,54 +534,9 @@ class coalescentHistory {
         .attr("font-size", "12")
         .text(gen + 1);
     }    
+
+	this.drawTimeline(w,h,padding,sectionID);
   
-    // Adding timeline to side of coalescent history
-    let timelineSVG = d3
-      .select("body") 
-      .select(sectionID)
-      .append("svg")
-      .attr("width", 80)
-      .attr("height", h);
-    timelineSVG				// Add 'Present' label
-      .append("text")
-      .attr("x", 40)
-      .attr("y", padding + 5)
-      .attr("text-anchor", "middle")
-      .attr("font-family", "Glober")
-      .attr("font-size", "22")
-      .text("Present");
-    timelineSVG				// Add 'Past' label
-      .append("text")
-      .attr("x", 40)
-      .attr("y", (this.nGens - 1) / this.nGens * h + padding + 5)
-      .attr("text-anchor", "middle")
-      .attr("font-family", "Glober")
-      .attr("font-size", "22")
-      .text("Past");
-    timelineSVG				// Vertical line in arrow
-      .append("line")
-      .attr("x1", 40)
-      .attr("x2", 40)
-      .attr("y1", padding + 15)
-      .attr("y2", (this.nGens - 2) / this.nGens * h + padding + 5)
-      .attr("stroke", "black")
-      .attr("stroke-width", 2);
-    timelineSVG				// First arrowhead line
-      .append("line")
-      .attr("x1", 30)
-      .attr("x2", 40)
-      .attr("y1", (this.nGens - 2.5) / this.nGens * h + padding + 5)
-      .attr("y2", (this.nGens - 2) / this.nGens * h + padding + 5)
-      .attr("stroke", "black")
-      .attr("stroke-width", 2);
-    timelineSVG				// Second arrowhead line
-      .append("line")
-      .attr("x1", 50)
-      .attr("x2", 40)
-      .attr("y1", (this.nGens - 2.5) / this.nGens * h + padding + 5)
-      .attr("y2", (this.nGens - 2) / this.nGens * h + padding + 5)
-      .attr("stroke", "black")
-      .attr("stroke-width", 2);  
   }
 }
 

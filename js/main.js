@@ -94,3 +94,30 @@ function drawAndSortHistory() {
 
 }
 
+function drawFullHistory() {
+
+  const popSize = popSizeSlider.getValue();
+  const sampleSize = sampleSizeSlider.getValue();
+  const nGens = numGenSlider.getValue();
+
+  // Setting plotting defaults
+  const svgWidth = 0.57 * window.innerWidth;
+  //const svgHeight = 0.9 * window.innerHeight;		// Constant height
+  const svgHeight = 40 * nGens;						// Height scales with # of generations
+  const padding = 10;
+
+  if (sampleSize > popSize) {
+    alert("Sample size cannot be greater than the population size.");
+    return;
+  }
+
+  d3.selectAll("svg").remove();
+
+  h = new coalescentHistory(popSize, nGens, sampleSize);
+
+  h.sampleHistory();
+
+  h.drawFullPopHistory(svgWidth, svgHeight, padding, "#visualization");
+
+}
+
