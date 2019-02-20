@@ -2,7 +2,8 @@ const branchLengthSlider = new Slider("#ex9", {
   tooltip: "always"
 });
 
-branchLengthSlider.on('change', function({newValue}){
+branchLengthSlider.on('slideStop', function(){
+  let newValue = parseFloat(branchLengthSlider.getValue());
   showValueAppendScale(newValue);
 })
 
@@ -90,6 +91,7 @@ d3.select("#clearCharHists").on("click", function() {
 
 d3.select("#drawCharHist").on("click", function() {
   const branchLength = parseFloat(branchLengthSlider.getValue());
+  startState = document.getElementById("fixStart").checked ? "A" : null;
   myCharHistory.sampleHistory(branchLength, startState);
   let plotSvg = d3.select("#histories").append("svg");
   myCharHistory.drawHistory(
@@ -97,7 +99,7 @@ d3.select("#drawCharHist").on("click", function() {
     (w = 800),
     (h = 30),
     (svg = plotSvg),
-    (showStates = show)
+    (showStates = document.getElementById("showStates").checked)
   );
   plotSvg.datum([myCharHistory.states, myCharHistory.waitingTimes]);
 
