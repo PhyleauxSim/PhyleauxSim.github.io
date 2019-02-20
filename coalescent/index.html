@@ -34,8 +34,8 @@
     }
   .title{
     height: auto;
-    color: #99A3A4;
-    background-color: #424949;
+    color: white;
+    background-color: #461D7C;
     }
   .title h1 {
     padding: 1em;
@@ -57,15 +57,16 @@
     }
     .btn-primary{
       background-color: #FDD023;
+      color: #461D7C;
     }
     .btn-primary:hover{
-      background-color: #D29F13
+      background-color: #D29F13;
     }
   </style>
 </head>
 <body>
   <div class='title'>
-    <h1 style="text-align: center;">Coalescent Histories In a Population</h1>
+    <h1 style="text-align: center;">Coalescence In One Population</h1>
   </div>
 <div class="container-fluid">
         <div class="row">
@@ -74,23 +75,29 @@
                <div class="form-group">
                 <label class="font-weight-bold">Population Size</label>
                 <div class="slider-wrapper">
-                  <input id="population-size" data-slider-id='ex1Slider' type="text" data-slider-min="15" data-slider-max="30" data-slider-step="1" data-slider-value="17"/>
-                </div>
-              </div>
-               <div class="form-group">
-                <label class="font-weight-bold">Sample Size</label>
-                <div class="slider-wrapper">
-                  <input id="sample-size" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="15" data-slider-step="1" data-slider-value="5"/>
+                  <input id="population-size" data-slider-id='ex1Slider' type="text" data-slider-min="15" data-slider-max="50" data-slider-step="1" data-slider-value="17"/>
                 </div>
               </div>
                <div class="form-group">
                 <label class="font-weight-bold">Number of Generations</label>
                 <div class="slider-wrapper">
-                  <input id="number-of-generations" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="30" data-slider-step="5" data-slider-value="20"/>
+                  <input id="number-of-generations" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="40" data-slider-step="1" data-slider-value="20"/>
                 </div>
               </div>
               <div class="form-group">
-                <button class="btn btn-primary" onclick="drawCoalescentTree()">Redraw</button>
+                <label class="font-weight-bold">Sample Size</label>
+                <div class="slider-wrapper">
+                  <input id="sample-size" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="50" data-slider-step="1" data-slider-value="5"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <button class="btn btn-primary" onclick="drawCoalescentTree()">Draw New History</button>
+              </div>
+              <div class="form-group">
+                <button class="btn btn-primary" onclick="drawCoalescentTree(true)">Sort History</button>
+              </div>
+              <div class="form-group">
+                <button class="btn btn-primary" onclick="drawAndSortHistory()">Draw and Sort New History</button>
               </div>
                 </div> 
             </div>
