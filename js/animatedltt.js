@@ -20,8 +20,9 @@ d3
 
 // I'm rewriting this function to make it reactive like I did in coalescent. Hence it should carry internal state of values need to create tree structure and plot.
 function draw() {
-  // reset all
-  d3
+
+  function clear(){
+    d3
     .select("body")
     .select("#phylosvg")
     .remove();
@@ -33,6 +34,9 @@ function draw() {
     .select("#LTTsvg")
     .selectAll("line")
     .remove();
+  }
+  
+  clear()
 
   // Initializing animation time and plot heights
   var inputTime = animationSlider.getValue();
@@ -69,12 +73,17 @@ function draw() {
     (plotTime = inputTime)
   );
 
+  d3.select("#phylosvg").on("click", function(){
+    playAnimation()
+  });
+}
   // This event listener is here, rather than in the Animated Line constructor,
   // because I can't figure out how to reference variables in that Animated Line
   // instance to pass to the function attached to the event listener. "this" doesn't
   // work in that context. By placing the event listener after the object instantiation
   // these variables can be passed directly.
-  d3.select("#phylosvg").on("click", function() {
+  function playAnimation(){
+    reset()
     moveLine(
       myAnimatedLine.lineX,
       myAnimatedLine.svg,
@@ -82,7 +91,7 @@ function draw() {
       myAnimatedLine.moveTime
     );
 
-    // Activates LTT animation
+        // Activates LTT animation
     for (var i = 1; i < myLTT.nodeXvals.length; i++) {
       // Iterates through unique x coordinates
       window.setTimeout(
@@ -98,14 +107,13 @@ function draw() {
         myLTT.color
       );
     }
-  });
-}
+  }
 
 // Calls this function on initial page load to create first version of all graphics and text
 draw();
 
-d3.select("#reset").on("click", function() {
-  // Sets actions for "Reset" button.
+function reset(){
+    // Sets actions for "Reset" button.
   d3
     .select("#LTTsvg")
     .selectAll("line")
@@ -114,6 +122,10 @@ d3.select("#reset").on("click", function() {
     .select("#progressLine")
     .attr("x1", myAnimatedLine.padding)
     .attr("x2", myAnimatedLine.padding);
+}
+
+d3.select("#reset").on("click", function() {
+  reset()
 });
 
 d3.select("#readTree").on("click", function() {
