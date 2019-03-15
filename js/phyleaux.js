@@ -3,7 +3,7 @@
 // jembrown@lsu.edu
 // A library for phylogenetic illustrations and animations
 // *** Requires d3.js ***
-// *** Requires underscore.js? *** 
+// *** Requires underscore.js? ***
 // *** jStat.js required for functions involving character histories ***
 
 // ---------------- ** Classes ** ----------------
@@ -129,7 +129,7 @@ class characterHistory {
             return w;
           } else {
             waitTimeSum += waitingTimes[i];
-            currX = waitTimeSum / brl * w;
+            currX = (waitTimeSum / brl) * w;
             return currX;
           }
         })
@@ -146,10 +146,10 @@ class characterHistory {
               return currX + (w - currX) / 2;
             } else if (i === 0) {
               // First state
-              return waitingTimes[i] / 2 / brl * w;
+              return (waitingTimes[i] / 2 / brl) * w;
             } else {
               // All other states
-              return currX - waitingTimes[i] / 2 / brl * w;
+              return currX - (waitingTimes[i] / 2 / brl) * w;
             }
           })
           .attr("y", h / 2 + 5)
@@ -164,7 +164,6 @@ class characterHistory {
 // Class for simulating coalescent histories within a single population
 
 class coalescentHistory {
-
   // Create new coalescent history
   constructor(popSize, nGens, sampleSize) {
     this.popSize = popSize;
@@ -172,10 +171,10 @@ class coalescentHistory {
     this.sampleSize = sampleSize;
     this.descMatrix = [];
     for (let i = 0; i < nGens; i++) {
-      this.descMatrix.push([]);		// Create new, empty generation
+      this.descMatrix.push([]); // Create new, empty generation
       for (let j = 0; j < popSize; j++) {
-        const individual = new coalescentIndividual(null, j);	// Create new individual
-        this.descMatrix[i].push(individual);					// Add new individual to most recent generation
+        const individual = new coalescentIndividual(null, j); // Create new individual
+        this.descMatrix[i].push(individual); // Add new individual to most recent generation
       }
     }
   }
@@ -184,33 +183,33 @@ class coalescentHistory {
   sampleHistory() {
     let numSelections = 0;
     while (numSelections < this.sampleSize) {
-      let selectedIndividual = Math.floor(Math.random() * this.popSize);		// Select individuals from most recent generation
-      if (!this.descMatrix[0][selectedIndividual].selected){
-      	this.descMatrix[0][selectedIndividual].selected = true;  				// Update flag for selected individuals
-      	numSelections++;										 				// Increment the number of selections made
+      let selectedIndividual = Math.floor(Math.random() * this.popSize); // Select individuals from most recent generation
+      if (!this.descMatrix[0][selectedIndividual].selected) {
+        this.descMatrix[0][selectedIndividual].selected = true; // Update flag for selected individuals
+        numSelections++; // Increment the number of selections made
       }
     }
     for (let g = 1; g < this.nGens; g++) {
       for (let i = 0; i < this.popSize; i++) {
-          let parentIndex = Math.floor(Math.random() * this.popSize);  			// Randomly choose parental allele from previous generation
-          this.descMatrix[g - 1][i].parent = this.descMatrix[g][parentIndex];	// Set parent pointer for descendant
-          this.descMatrix[g][parentIndex].desc.push(this.descMatrix[g - 1][i]);	// Add descendant to parent
-          if (this.descMatrix[g - 1][i].selected) {
-            this.descMatrix[g][parentIndex].selected = true;					// Turn on 'selected' flag for selected parents
-          }
+        let parentIndex = Math.floor(Math.random() * this.popSize); // Randomly choose parental allele from previous generation
+        this.descMatrix[g - 1][i].parent = this.descMatrix[g][parentIndex]; // Set parent pointer for descendant
+        this.descMatrix[g][parentIndex].desc.push(this.descMatrix[g - 1][i]); // Add descendant to parent
+        if (this.descMatrix[g - 1][i].selected) {
+          this.descMatrix[g][parentIndex].selected = true; // Turn on 'selected' flag for selected parents
+        }
       }
     }
   }
 
-    // Adding timeline to side of coalescent history
-  drawTimeline(w, h, padding, sectionID){
+  // Adding timeline to side of coalescent history
+  drawTimeline(w, h, padding, sectionID) {
     let timelineSVG = d3
-      .select("body") 
+      .select("body")
       .select(sectionID)
       .append("svg")
       .attr("width", 80)
       .attr("height", h);
-    timelineSVG				// Add 'Present' label
+    timelineSVG // Add 'Present' label
       .append("text")
       .attr("x", 40)
       .attr("y", padding + 5)
@@ -218,93 +217,105 @@ class coalescentHistory {
       .attr("font-family", "Glober")
       .attr("font-size", "22")
       .text("Present");
-    timelineSVG				// Add 'Past' label
+    timelineSVG // Add 'Past' label
       .append("text")
       .attr("x", 40)
-      .attr("y", (this.nGens - 1) / this.nGens * h + padding + 5)
+      .attr("y", ((this.nGens - 1) / this.nGens) * h + padding + 5)
       .attr("text-anchor", "middle")
       .attr("font-family", "Glober")
       .attr("font-size", "22")
       .text("Past");
-    timelineSVG				// Vertical line in arrow
+    timelineSVG // Vertical line in arrow
       .append("line")
       .attr("x1", 40)
       .attr("x2", 40)
       .attr("y1", padding + 15)
-      .attr("y2", (this.nGens - 2) / this.nGens * h + padding + 5)
+      .attr("y2", ((this.nGens - 2) / this.nGens) * h + padding + 5)
       .attr("stroke", "black")
       .attr("stroke-width", 2);
-    timelineSVG				// First arrowhead line
+    timelineSVG // First arrowhead line
       .append("line")
       .attr("x1", 30)
       .attr("x2", 40)
-      .attr("y1", (this.nGens - 2.5) / this.nGens * h + padding + 5)
-      .attr("y2", (this.nGens - 2) / this.nGens * h + padding + 5)
+      .attr("y1", ((this.nGens - 2.5) / this.nGens) * h + padding + 5)
+      .attr("y2", ((this.nGens - 2) / this.nGens) * h + padding + 5)
       .attr("stroke", "black")
       .attr("stroke-width", 2);
-    timelineSVG				// Second arrowhead line
+    timelineSVG // Second arrowhead line
       .append("line")
       .attr("x1", 50)
       .attr("x2", 40)
-      .attr("y1", (this.nGens - 2.5) / this.nGens * h + padding + 5)
-      .attr("y2", (this.nGens - 2) / this.nGens * h + padding + 5)
+      .attr("y1", ((this.nGens - 2.5) / this.nGens) * h + padding + 5)
+      .attr("y2", ((this.nGens - 2) / this.nGens) * h + padding + 5)
       .attr("stroke", "black")
       .attr("stroke-width", 2);
   }
 
   drawSortedHistory(w, h, padding, sectionID) {
     let coalSVG = d3
-      .select("body") 
+      .select("body")
       .select(sectionID)
-      .append("svg")  // Create new svg
+      .append("svg") // Create new svg
       .attr("width", w)
       .attr("height", h)
       .attr("id", "vis");
 
-    for (let i = 0; i < this.nGens; i++){
-      let results = _.groupBy(this.descMatrix[i], 'selected');	// Uses underscore.js to split individuals into sets based on 'selected' bool
-      let a = results['false'];	// Set of individuals not selected
-      let b = results['true'];	// Set of individuals that are selected
-      let c = [].concat(b, a);	// Concatenating sets, with selected individuals first
-      for (let j = 0; j < c.length; j++){
-        c[j].xPos = j;	// Resets 'xPos' property for all individuals so selected individuals are on the left
+    for (let i = 0; i < this.nGens; i++) {
+      let results = _.groupBy(this.descMatrix[i], "selected"); // Uses underscore.js to split individuals into sets based on 'selected' bool
+      let a = results["false"]; // Set of individuals not selected
+      let b = results["true"]; // Set of individuals that are selected
+      let c = [].concat(b, a); // Concatenating sets, with selected individuals first
+      for (let j = 0; j < c.length; j++) {
+        c[j].xPos = j; // Resets 'xPos' property for all individuals so selected individuals are on the left
       }
       this.descMatrix[i] = c;
     }
-    
+
     // Sort x positions of individuals so lines of descent don't cross
-    for (let g = this.nGens-2; g >= 0; g--){	// Start with next-to-last generation and move to present
-    	let swaps = true;
-    	while (swaps){		// Keep swapping as long as swaps are happening
-    		swaps = false;	// Set to false unless swap happens
-			for (let i = 0; i < this.popSize-1; i++){	// Nested loops to compare all selected individuals
-				for (let j = i+1; j < this.popSize; j++){
-					if (this.descMatrix[g][i].selected && this.descMatrix[g][j].selected){
-						if (((this.descMatrix[g][i].xPos < this.descMatrix[g][j].xPos) && 	// Look for mismatched ordering between positions of descendants and parents
-							(this.descMatrix[g][i].parent.xPos > this.descMatrix[g][j].parent.xPos)) || 
-							((this.descMatrix[g][i].xPos > this.descMatrix[g][j].xPos) &&
-							(this.descMatrix[g][i].parent.xPos < this.descMatrix[g][j].parent.xPos))){
-								let tempX = this.descMatrix[g][i].xPos;		// Perform swap
-								this.descMatrix[g][i].xPos = this.descMatrix[g][j].xPos;
-								this.descMatrix[g][j].xPos = tempX;
-								swaps = true;
-						}
-					}
-				}
-			}
-    	}
+    for (let g = this.nGens - 2; g >= 0; g--) {
+      // Start with next-to-last generation and move to present
+      let swaps = true;
+      while (swaps) {
+        // Keep swapping as long as swaps are happening
+        swaps = false; // Set to false unless swap happens
+        for (let i = 0; i < this.popSize - 1; i++) {
+          // Nested loops to compare all selected individuals
+          for (let j = i + 1; j < this.popSize; j++) {
+            if (
+              this.descMatrix[g][i].selected &&
+              this.descMatrix[g][j].selected
+            ) {
+              if (
+                (this.descMatrix[g][i].xPos < this.descMatrix[g][j].xPos && // Look for mismatched ordering between positions of descendants and parents
+                  this.descMatrix[g][i].parent.xPos >
+                    this.descMatrix[g][j].parent.xPos) ||
+                (this.descMatrix[g][i].xPos > this.descMatrix[g][j].xPos &&
+                  this.descMatrix[g][i].parent.xPos <
+                    this.descMatrix[g][j].parent.xPos)
+              ) {
+                let tempX = this.descMatrix[g][i].xPos; // Perform swap
+                this.descMatrix[g][i].xPos = this.descMatrix[g][j].xPos;
+                this.descMatrix[g][j].xPos = tempX;
+                swaps = true;
+              }
+            }
+          }
+        }
+      }
     }
-    
+
     // Draw lines of descent
     // Drawing these lines first so that Vivus animation gets started without a delay
     for (let gen = 0; gen < this.nGens; gen++) {
       for (let pop = 0; pop < this.popSize; pop++) {
         let individual = this.descMatrix[gen][pop];
         if (individual.selected && gen != this.nGens - 1) {
-          const x1 = individual.xPos / (this.popSize*1.05) * w + padding + 20;
-          const x2 = individual.parent.xPos / (this.popSize*1.05) * w + padding + 20;
-          const y1 = gen / this.nGens * h + padding;
-          const y2 = (gen + 1) / this.nGens * h + padding;
+          const x1 =
+            (individual.xPos / (this.popSize * 1.05)) * w + padding + 20;
+          const x2 =
+            (individual.parent.xPos / (this.popSize * 1.05)) * w + padding + 20;
+          const y1 = (gen / this.nGens) * h + padding;
+          const y2 = ((gen + 1) / this.nGens) * h + padding;
           coalSVG
             .append("line")
             .attr("x1", x1)
@@ -316,7 +327,7 @@ class coalescentHistory {
         }
       }
     }
-    
+
     // Draw circles for individuals
     for (let gen = 0; gen < this.nGens; gen++) {
       for (let pop = 0; pop < this.popSize; pop++) {
@@ -324,67 +335,79 @@ class coalescentHistory {
         if (individual.selected) {
           coalSVG
             .append("circle")
-            .attr("cx", individual.xPos / (this.popSize*1.05) * w + padding + 20)
-            .attr("cy", gen / this.nGens * h + padding)
-            .attr("r", Math.floor(10 * 18/this.popSize))
+            .attr(
+              "cx",
+              (individual.xPos / (this.popSize * 1.05)) * w + padding + 20
+            )
+            .attr("cy", (gen / this.nGens) * h + padding)
+            .attr("r", Math.floor((10 * 18) / this.popSize))
             .attr("fill", "red");
         } else {
           coalSVG
             .append("circle")
-            .attr("cx", individual.xPos / (this.popSize*1.05) * w + padding + 20)
-            .attr("cy", gen / this.nGens * h + padding)
-            .attr("r", Math.floor(10 * 18/this.popSize))
+            .attr(
+              "cx",
+              (individual.xPos / (this.popSize * 1.05)) * w + padding + 20
+            )
+            .attr("cy", (gen / this.nGens) * h + padding)
+            .attr("r", Math.floor((10 * 18) / this.popSize))
             .attr("fill", "blue");
         }
       }
-    } 
-        
+    }
+
     // Adds numeric labels for generations
     for (let gen = 0; gen < this.nGens; gen++) {
       coalSVG
         .append("text")
         .attr("x", 5)
-        .attr("y", gen / this.nGens * h + padding + 5)
+        .attr("y", (gen / this.nGens) * h + padding + 5)
         .attr("text-anchor", "middle")
         .attr("font-family", "Glober")
         .attr("font-size", "12")
         .text(gen + 1);
     }
-    
-    this.drawTimeline(w,h,padding,sectionID);
-    
+
+    this.drawTimeline(w, h, padding, sectionID);
   }
 
   drawFullPopHistory(w, h, padding, sectionID) {
     let coalSVG = d3
-      .select("body") 
+      .select("body")
       .select(sectionID)
-      .append("svg")  // Create new svg
+      .append("svg") // Create new svg
       .attr("width", w)
       .attr("height", h)
       .attr("id", "vis");
-    
+
     // Sort x positions of individuals so lines of descent don't cross
-    for (let g = this.nGens-2; g >= 0; g--){	// Start with next-to-last generation and move to present
-    	let swaps = true;
-    	while (swaps){		// Keep swapping as long as swaps are happening
-    		swaps = false;	// Set to false unless swap happens
-			for (let i = 0; i < this.popSize-1; i++){	// Nested loops to compare all selected individuals
-				for (let j = i+1; j < this.popSize; j++){
-					if (((this.descMatrix[g][i].xPos < this.descMatrix[g][j].xPos) && 	// Look for mismatched ordering between positions of descendants and parents
-						(this.descMatrix[g][i].parent.xPos > this.descMatrix[g][j].parent.xPos)) || 
-						((this.descMatrix[g][i].xPos > this.descMatrix[g][j].xPos) &&
-						(this.descMatrix[g][i].parent.xPos < this.descMatrix[g][j].parent.xPos))){
-							let tempX = this.descMatrix[g][i].xPos;		// Perform swap
-							this.descMatrix[g][i].xPos = this.descMatrix[g][j].xPos;
-							this.descMatrix[g][j].xPos = tempX;
-							swaps = true;
-					}
-				}
-			}
-    	}
+    for (let g = this.nGens - 2; g >= 0; g--) {
+      // Start with next-to-last generation and move to present
+      let swaps = true;
+      while (swaps) {
+        // Keep swapping as long as swaps are happening
+        swaps = false; // Set to false unless swap happens
+        for (let i = 0; i < this.popSize - 1; i++) {
+          // Nested loops to compare all selected individuals
+          for (let j = i + 1; j < this.popSize; j++) {
+            if (
+              (this.descMatrix[g][i].xPos < this.descMatrix[g][j].xPos && // Look for mismatched ordering between positions of descendants and parents
+                this.descMatrix[g][i].parent.xPos >
+                  this.descMatrix[g][j].parent.xPos) ||
+              (this.descMatrix[g][i].xPos > this.descMatrix[g][j].xPos &&
+                this.descMatrix[g][i].parent.xPos <
+                  this.descMatrix[g][j].parent.xPos)
+            ) {
+              let tempX = this.descMatrix[g][i].xPos; // Perform swap
+              this.descMatrix[g][i].xPos = this.descMatrix[g][j].xPos;
+              this.descMatrix[g][j].xPos = tempX;
+              swaps = true;
+            }
+          }
+        }
+      }
     }
-    
+
     // Draw lines of descent
     /*for (let gen = 0; gen < this.nGens; gen++) {
       for (let pop = 0; pop < this.popSize; pop++) {
@@ -405,60 +428,64 @@ class coalescentHistory {
         }
       }
     }*/
-    
-    for (let gen = this.nGens-1; gen >= 0; gen--){
-    	for (let pop = 0; pop < this.popSize; pop++){
-    		let individual = this.descMatrix[gen][pop];
-    		if (gen == this.nGens-1){
-    			let redVal = Math.floor(Math.random()*255);
-    			let greenVal = Math.floor(Math.random()*255);
-    			let blueVal = Math.floor(Math.random()*255);
-    			individual.color = "rgb(".concat(String(redVal),",",String(greenVal),",",String(blueVal),")");
-    		} else {
-    			individual.color = individual.parent.color;
-        		const x1 = individual.xPos / (this.popSize*1.05) * w + padding + 20;
-          		const x2 = individual.parent.xPos / (this.popSize*1.05) * w + padding + 20;
-          		const y1 = gen / this.nGens * h + padding;
-          		const y2 = (gen + 1) / this.nGens * h + padding;
-          		coalSVG
-           		 .append("line")
-            	 .attr("x1", x1)
-           		 .attr("x2", x2)
-           		 .attr("y1", y1)
-           		 .attr("y2", y2)
-           		 .attr("stroke", individual.parent.color)
-           		 .attr("stroke-width", 2);       			
-    		}
-    	}
+
+    for (let gen = this.nGens - 1; gen >= 0; gen--) {
+      for (let pop = 0; pop < this.popSize; pop++) {
+        let individual = this.descMatrix[gen][pop];
+        if (gen == this.nGens - 1) {
+          const R = Math.floor(Math.random() * 255);
+          const G = Math.floor(Math.random() * 255);
+          const B = Math.floor(Math.random() * 255);
+          individual.color = `rgb(${R},${G},${B})`
+        } else {
+          individual.color = individual.parent.color;
+          const x1 =
+            (individual.xPos / (this.popSize * 1.05)) * w + padding + 20;
+          const x2 =
+            (individual.parent.xPos / (this.popSize * 1.05)) * w + padding + 20;
+          const y1 = (gen / this.nGens) * h + padding;
+          const y2 = ((gen + 1) / this.nGens) * h + padding;
+          coalSVG
+            .append("line")
+            .attr("x1", x1)
+            .attr("x2", x2)
+            .attr("y1", y1)
+            .attr("y2", y2)
+            .attr("stroke", individual.parent.color)
+            .attr("stroke-width", 2);
+        }
+      }
     }
-    
+
     // Draw circles for individuals
     for (let gen = 0; gen < this.nGens; gen++) {
       for (let pop = 0; pop < this.popSize; pop++) {
-          let individual = this.descMatrix[gen][pop];
-          coalSVG
+        let individual = this.descMatrix[gen][pop];
+        coalSVG
           .append("circle")
-          .attr("cx", individual.xPos / (this.popSize*1.05) * w + padding + 20)
-          .attr("cy", gen / this.nGens * h + padding)
-          .attr("r", Math.floor(10 * 18/this.popSize))
+          .attr(
+            "cx",
+            (individual.xPos / (this.popSize * 1.05)) * w + padding + 20
+          )
+          .attr("cy", (gen / this.nGens) * h + padding)
+          .attr("r", Math.floor((10 * 18) / this.popSize))
           .attr("fill", individual.color);
       }
-    } 
-        
+    }
+
     // Adds numeric labels for generations
     for (let gen = 0; gen < this.nGens; gen++) {
       coalSVG
         .append("text")
         .attr("x", 5)
-        .attr("y", gen / this.nGens * h + padding + 5)
+        .attr("y", (gen / this.nGens) * h + padding + 5)
         .attr("text-anchor", "middle")
         .attr("font-family", "Glober")
         .attr("font-size", "12")
         .text(gen + 1);
     }
 
-	this.drawTimeline(w,h,padding,sectionID);    
-
+    this.drawTimeline(w, h, padding, sectionID);
   }
 
   drawHistory(w, h, padding, sectionID) {
@@ -469,74 +496,93 @@ class coalescentHistory {
       .attr("width", w)
       .attr("height", h)
       .attr("id", "vis");
-      
-	// Sort x positions of individuals so lines of descent don't cross
-    for (let g = this.nGens-2; g >= 0; g--){	// Start with next-to-last generation and move to present
-    	let swaps = true;
-    	while (swaps){		// Keep swapping as long as swaps are happening
-    		swaps = false;	// Set to false unless swap happens
-			for (let i = 0; i < this.popSize-1; i++){	// Nested loops to compare all selected individuals
-				for (let j = i+1; j < this.popSize; j++){
-					if (((this.descMatrix[g][i].xPos < this.descMatrix[g][j].xPos) && 	// Look for mismatched ordering between positions of descendants and parents
-						(this.descMatrix[g][i].parent.xPos > this.descMatrix[g][j].parent.xPos)) || 
-						((this.descMatrix[g][i].xPos > this.descMatrix[g][j].xPos) &&
-						(this.descMatrix[g][i].parent.xPos < this.descMatrix[g][j].parent.xPos))){
-							let tempX = this.descMatrix[g][i].xPos;		// Perform swap
-							this.descMatrix[g][i].xPos = this.descMatrix[g][j].xPos;
-							this.descMatrix[g][j].xPos = tempX;
-							swaps = true;
-					}
-				}
-			}
-    	}
+
+    // Sort x positions of individuals so lines of descent don't cross
+    for (let g = this.nGens - 2; g >= 0; g--) {
+      // Start with next-to-last generation and move to present
+      let swaps = true;
+      while (swaps) {
+        // Keep swapping as long as swaps are happening
+        swaps = false; // Set to false unless swap happens
+        for (let i = 0; i < this.popSize - 1; i++) {
+          // Nested loops to compare all selected individuals
+          for (let j = i + 1; j < this.popSize; j++) {
+            if (
+              (this.descMatrix[g][i].xPos < this.descMatrix[g][j].xPos && // Look for mismatched ordering between positions of descendants and parents
+                this.descMatrix[g][i].parent.xPos >
+                  this.descMatrix[g][j].parent.xPos) ||
+              (this.descMatrix[g][i].xPos > this.descMatrix[g][j].xPos &&
+                this.descMatrix[g][i].parent.xPos <
+                  this.descMatrix[g][j].parent.xPos)
+            ) {
+              let tempX = this.descMatrix[g][i].xPos; // Perform swap
+              this.descMatrix[g][i].xPos = this.descMatrix[g][j].xPos;
+              this.descMatrix[g][j].xPos = tempX;
+              swaps = true;
+            }
+          }
+        }
+      }
     }
 
-      
     for (let gen = 0; gen < this.nGens; gen++) {
       for (let pop = 0; pop < this.popSize; pop++) {
         let individual = this.descMatrix[gen][pop];
         if (!individual.selected) {
           coalSVG
             .append("circle")
-            .attr("cx", individual.xPos / (this.popSize*1.05) * w + padding + 20)
-            .attr("cy", gen / this.nGens * h + padding)
-            .attr("r", Math.floor(10 * 18/this.popSize))
+            .attr(
+              "cx",
+              (individual.xPos / (this.popSize * 1.05)) * w + padding + 20
+            )
+            .attr("cy", (gen / this.nGens) * h + padding)
+            .attr("r", Math.floor((10 * 18) / this.popSize))
             .attr("fill", "blue");
         } else if (individual.selected) {
           coalSVG
             .append("circle")
-            .attr("cx", individual.xPos / (this.popSize*1.05) * w + padding + 20)
-            .attr("cy", gen / this.nGens * h + padding)
-            .attr("r", Math.floor(10 * 18/this.popSize))
+            .attr(
+              "cx",
+              (individual.xPos / (this.popSize * 1.05)) * w + padding + 20
+            )
+            .attr("cy", (gen / this.nGens) * h + padding)
+            .attr("r", Math.floor((10 * 18) / this.popSize))
             .attr("fill", "red");
           if (gen != this.nGens - 1) {
             coalSVG
               .append("line")
-              .attr("x1", individual.xPos / (this.popSize*1.05) * w + padding + 20)
-              .attr("x2", individual.parent.xPos / (this.popSize*1.05) * w + padding + 20)
-              .attr("y1", gen / this.nGens * h + padding)
-              .attr("y2", (gen + 1) / this.nGens * h + padding)
+              .attr(
+                "x1",
+                (individual.xPos / (this.popSize * 1.05)) * w + padding + 20
+              )
+              .attr(
+                "x2",
+                (individual.parent.xPos / (this.popSize * 1.05)) * w +
+                  padding +
+                  20
+              )
+              .attr("y1", (gen / this.nGens) * h + padding)
+              .attr("y2", ((gen + 1) / this.nGens) * h + padding)
               .attr("stroke", "red")
               .attr("stroke-width", 2);
           }
         }
       }
     }
-    
+
     // Adds numeric labels for generations
     for (let gen = 0; gen < this.nGens; gen++) {
       coalSVG
         .append("text")
         .attr("x", 5)
-        .attr("y", gen / this.nGens * h + padding + 5)
+        .attr("y", (gen / this.nGens) * h + padding + 5)
         .attr("text-anchor", "middle")
         .attr("font-family", "Glober")
         .attr("font-size", "12")
         .text(gen + 1);
-    }    
+    }
 
-	this.drawTimeline(w,h,padding,sectionID);
-  
+    this.drawTimeline(w, h, padding, sectionID);
   }
 }
 
@@ -544,10 +590,10 @@ class coalescentHistory {
 
 class coalescentIndividual {
   constructor(parent, xPos, desc = [], selected = false) {
-    this.parent = parent;		// Pointer to parent allele
-    this.xPos = xPos;			// Horizontal position for display
-    this.desc = desc;			// Array to hold descendant individuals
-    this.selected = selected;	// Flag if individual is part of selected history
+    this.parent = parent; // Pointer to parent allele
+    this.xPos = xPos; // Horizontal position for display
+    this.desc = desc; // Array to hold descendant individuals
+    this.selected = selected; // Flag if individual is part of selected history
   }
 }
 
@@ -585,26 +631,26 @@ class Model {
     return [
       [
         Adiag / norm,
-        rates[0] * bf[1] / norm,
-        rates[1] * bf[2] / norm,
-        rates[2] * bf[3] / norm
+        (rates[0] * bf[1]) / norm,
+        (rates[1] * bf[2]) / norm,
+        (rates[2] * bf[3]) / norm
       ],
       [
-        rates[0] * bf[0] / norm,
+        (rates[0] * bf[0]) / norm,
         Cdiag / norm,
-        rates[3] * bf[2] / norm,
-        rates[4] * bf[3] / norm
+        (rates[3] * bf[2]) / norm,
+        (rates[4] * bf[3]) / norm
       ],
       [
-        rates[1] * bf[0] / norm,
-        rates[3] * bf[1] / norm,
+        (rates[1] * bf[0]) / norm,
+        (rates[3] * bf[1]) / norm,
         Gdiag / norm,
-        rates[5] * bf[3] / norm
+        (rates[5] * bf[3]) / norm
       ],
       [
-        rates[2] * bf[0] / norm,
-        rates[4] * bf[1] / norm,
-        rates[5] * bf[2] / norm,
+        (rates[2] * bf[0]) / norm,
+        (rates[4] * bf[1]) / norm,
+        (rates[5] * bf[2]) / norm,
         Tdiag / norm
       ]
     ];
@@ -637,11 +683,11 @@ class Model {
 
   findStateIndex(state) {
     const states = {
-      "A": 0,
-      "C": 1,
-      "G": 2,
-      "T": 3,
-    }
+      A: 0,
+      C: 1,
+      G: 2,
+      T: 3
+    };
     return states[state];
   }
 }
@@ -816,7 +862,7 @@ class AnimatedLineOverTree {
     ]);
 
     this.yMin = this.padding - this.padding / 2;
-    this.yMax = h * this.scale + 3 * this.padding / 2;
+    this.yMax = h * this.scale + (3 * this.padding) / 2;
 
     let lineXlen = this.lineX.length;
 
@@ -1558,14 +1604,14 @@ function findSplitCommas(nodeStr) {
 // --------------------------------------------------
 
 function findStateIndex(state) {
-    const states = {
-      "A": 0,
-      "C": 1,
-      "G": 2,
-      "T": 3,
-    }
-    return states[state];
-  }
+  const states = {
+    A: 0,
+    C: 1,
+    G: 2,
+    T: 3
+  };
+  return states[state];
+}
 
 // --------------------------------------------------
 
@@ -1726,7 +1772,7 @@ function moveCirclesCladogram(nodeset, svg, currX, tipNum, moveTime) {
 
     // Move circles horizontally
     .transition()
-    .duration(3 / 4 * moveTime) // Set proportion of time for horizontal move
+    .duration((3 / 4) * moveTime) // Set proportion of time for horizontal move
     .attr("cx", function(d) {
       return minX * scale * w + padding;
     })
@@ -1880,3 +1926,4 @@ function sum(values) {
   }
   return total;
 }
+
