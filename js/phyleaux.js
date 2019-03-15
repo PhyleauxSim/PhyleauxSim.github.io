@@ -3,7 +3,7 @@
 // jembrown@lsu.edu
 // A library for phylogenetic illustrations and animations
 // *** Requires d3.js ***
-// *** Requires underscore.js? ***
+// *** Requires lodash.js ***
 // *** jStat.js required for functions involving character histories ***
 
 // ---------------- ** Classes ** ----------------
@@ -261,7 +261,7 @@ class coalescentHistory {
       .attr("id", "vis");
 
     for (let i = 0; i < this.nGens; i++) {
-      let results = _.groupBy(this.descMatrix[i], "selected"); // Uses underscore.js to split individuals into sets based on 'selected' bool
+      let results = _.groupBy(this.descMatrix[i], "selected"); // Uses lodash.js to split individuals into sets based on 'selected' bool
       let a = results["false"]; // Set of individuals not selected
       let b = results["true"]; // Set of individuals that are selected
       let c = [].concat(b, a); // Concatenating sets, with selected individuals first
