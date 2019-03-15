@@ -67,6 +67,8 @@ function drawCoalescentTree(sort=false) {
     for(let path of paths){
       path.addEventListener('click', function(event){
         let target = event.target
+        const [gen, pop, xPos] = target.getAttribute('id').split('-')
+        console.log(`generation: ${gen}`, `population: ${pop}`, `xPos: ${xPos}`)
         if (target.hasAttribute('fill') && target.getAttribute('fill') === 'blue'){
           target.setAttribute('fill', 'red')
         }else{

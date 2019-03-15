@@ -531,6 +531,7 @@ class CoalescentHistory {
         if (!individual.selected) {
           coalSVG
             .append("circle")
+            .attr('id', `${gen}-${pop}-${individual.xPos}`)
             .attr(
               "cx",
               (individual.xPos / (this.popSize * 1.05)) * w + padding + 20
@@ -541,6 +542,7 @@ class CoalescentHistory {
         } else if (individual.selected) {
           coalSVG
             .append("circle")
+            .attr('id', `${gen}-${pop}-${individual.xPos}`)
             .attr(
               "cx",
               (individual.xPos / (this.popSize * 1.05)) * w + padding + 20
@@ -1926,4 +1928,3 @@ function sum(values) {
   }
   return total;
 }
-
