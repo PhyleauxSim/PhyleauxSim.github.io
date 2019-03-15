@@ -59,8 +59,22 @@ function drawCoalescentTree(sort=false) {
   
   sort ? hs.drawSortedHistory(svgWidth, svgHeight, padding, "#visualization")  : hs.drawHistory(svgWidth, svgHeight, padding, "#visualization");
 
-  const v = new Vivus('vis', {type: 'oneByOne', start: 'autostart', duration: 200, animTimingFunction: Vivus.EASE}); 
-}
+  const v = new Vivus('vis', {type: 'oneByOne', start: 'autostart', duration: 200, animTimingFunction: Vivus.EASE});
+
+  // make alleles clickable when sample size is set to 0.
+  if (sampleSize === 0){
+    let paths = document.getElementsByTagName('path')
+    for(let path of paths){
+      path.addEventListener('click', function(event){
+        let target = event.target
+        if (target.hasAttribute('fill') && target.getAttribute('fill') === 'blue'){
+          target.setAttribute('fill', 'red')
+        }else{
+          target.setAttribute('fill', 'blue')
+        }
+      })
+    } 
+  }}
 
 function drawFullHistory() {
 
