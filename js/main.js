@@ -25,7 +25,7 @@ function drawNewHistory(){
   const sampleSize = sampleSizeSlider.getValue();
   const nGens = numGenSlider.getValue();
 
-  hs = new coalescentHistory(popSize, nGens, sampleSize);
+  hs = new CoalescentHistory(popSize, nGens, sampleSize);
   
   hs.sampleHistory();
 
@@ -70,8 +70,8 @@ function drawFullHistory() {
 
   // Setting plotting defaults
   const svgWidth = 0.57 * window.innerWidth;
-  //const svgHeight = 0.9 * window.innerHeight;		// Constant height
-  const svgHeight = 40 * nGens;						// Height scales with # of generations
+  //const svgHeight = 0.9 * window.innerHeight;   // Constant height
+  const svgHeight = 40 * nGens;           // Height scales with # of generations
   const padding = 10;
 
   if (sampleSize > popSize) {
@@ -81,7 +81,7 @@ function drawFullHistory() {
 
   d3.selectAll("svg").remove();
 
-  hFull = new coalescentHistory(popSize, nGens, sampleSize);
+  hFull = new CoalescentHistory(popSize, nGens, sampleSize);
 
   hFull.sampleHistory();
 

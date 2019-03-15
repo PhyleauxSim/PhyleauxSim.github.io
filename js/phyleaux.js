@@ -163,7 +163,7 @@ class characterHistory {
 
 // Class for simulating coalescent histories within a single population
 
-class coalescentHistory {
+class CoalescentHistory {
   // Create new coalescent history
   constructor(popSize, nGens, sampleSize) {
     this.popSize = popSize;
