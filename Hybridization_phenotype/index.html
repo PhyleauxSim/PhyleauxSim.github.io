@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript">
+//MISC
+    function updateTextInput(val) {
+          document.getElementById('textInput').value=val; 
+    }
+
+//Generation P
+    function disable_p2range() {
+        document.getElementById("p2").disabled = true;
+    }
+    
+
+    function update_p2(val) {
+        updateTextInput(val)
+        disable_p2range()
+        var val=100-parseInt(document.getElementById('p1').value);
+        document.getElementById('p2').value=val; 
+        }
+
+
+    function parentPopData(){
+        var a = parseInt(document.getElementById('p1').value);
+        var b = parseInt(document.getElementById('p2').value);
+        var p1r = parseInt(document.getElementById('p1R').value);
+        var p1g = parseInt(document.getElementById('p1G').value);
+        var p1b = parseInt(document.getElementById('p1B').value);
+        var p2r = parseInt(document.getElementById('p2R').value);
+        var p2g = parseInt(document.getElementById('p2G').value);
+        var p2b = parseInt(document.getElementById('p2B').value);
+        globalThis.initPar=[["rgb("+p1r+","+p1g+","+p1b+")", a],["rgb("+p2r+","+p2g+","+p2b+")", b]]
+        globalThis.numInds=parseInt(document.getElementById('nind').value);
+        globalThis.mutants=parseInt(document.getElementById('mutant').value);
+    }
+
+
+    function parentColor(){
+        var total = 100
+        var threshold = Math.random() * total;
+        total = 0;
+        for (let i = 0; i < 1; ++i){
+            total += initPar[i][1];
+            if (total >= threshold){
+                return initPar[i][0];
+            }
+        }    
+        return initPar[1][0];
+        }
+    
+
+    function parentPop(){
+        var a = parseInt(document.getElementById('p1').value);
+        update_p2(a)
+        zero_Generation()
+        parentPopData()
+        pixe=Math.sqrt((500*500)/numInds);
+        var canvas1 = document.getElementById('canvas');
+        if(canvas1.getContext){
+            var ctx1 = canvas1.getContext('2d');
+            var x=0;
+            var y=0;
+            var diamet = canvas1.width;
+        }
+        pnum=0
+        globalThis.parentGrid=[]
+        for(; y < diamet; y+=pixe) { // x/y grid
+                for(x = 0; x < diamet; x+=pixe) {
+                    ++pnum;
+                    pixCol=parentColor()
+                    ctx1.fillStyle=pixCol; // nonRandom color setting by user input
+                    ctx1.fillRect(x, y, pixe, pixe);
+                    //ctx1.beginPath();
+                    //ctx1.arc(x, y, pixe/2, 0, 2 * Math.PI);
+                    //ctx1.stroke();
+                    parentGrid.push([pnum,pixCol])
+                }
+                }
+        plot1(parentGrid)
+    } 
+
+//Generation F1+
+
+    function getRndColor(){
+        var r = 255*Math.random()|0;
+        var g = 255*Math.random()|0;
+        var b = 255*Math.random()|0;
+        return 'rgb(' + r + ',' + g + ',' + b + ')';
+    }
+        
+    globalThis.generat=0;
+    function track_Generation(){
+        document.getElementById('gen').value = ++generat;
+        return generat
+    }
+
+    function zero_Generation(){
+        globalThis.generat=0;
+        document.getElementById('gen').value = 0;
+        return generat
+    }
+
+    function choose_Mate(me){
+
+        var size=Math.sqrt(parentGrid.length) 
+        
+        if(me==1){//me=top left corner
+            var choices=[2,size+1,size+2]
+            var mate = parentGrid[choices[Math.floor(Math.random() * choices.length)]-1];
+        }else if (me==size){//me=top right corner
+            var choices=[size-1,size*2-1,size*2]
+            var mate = parentGrid[choices[Math.floor(Math.random() * choices.length)]-1];
+        }else if (me==(size*size)-(size-1)){//me=bottom left corner
+            var choices=[(size*size)-(size+size-1),(size*size)-(size+size-2),(size*size)-(size-2)]
+            var mate = parentGrid[choices[Math.floor(Math.random() * choices.length)]-1];
+        }else if (me==(size*size)){//me==bottom right corner
+            var choices=[(size*size)-(size+1),(size*size)-size,(size*size)-(size-2)]
+            var mate = parentGrid[choices[Math.floor(Math.random() * choices.length)]-1];
+        }else if (me>1 && me<size){//me=non-corner top row
+            var choices=[me-1,me+1,me+(size-1),me+size,me+(size+1)]
+            var mate = parentGrid[choices[Math.floor(Math.random() * choices.length)]-1];
+        }else if (me>(size*size)-(size-1) && me<(size*size)){ //me=non-corner bottom row
+            var choices=[me-1,me+1,me-(size-1),me-size,me-(size+1)]
+            var mate = parentGrid[choices[Math.floor(Math.random() * choices.length)]-1];
+        }else if (me % size ==1){//non corner left side
+            var choices=[me-size,me-size+1,me+1,me+size,me+(size+1)]
+            var mate = parentGrid[choices[Math.floor(Math.random() * choices.length)]-1];
+        }else if (me % size ==0){//non corner right side
+            var choices=[me-(size)-1,me-size,me-1,me+(size-1),me+size]
+            var mate = parentGrid[choices[Math.floor(Math.random() * choices.length)]-1];
+        }else{//everything else
+            var choices=[(me-size)-1,(me-size),(me-size+1),(me-1),(me+1),(me+size-1),(me+size),(me+size+1)]
+            var mate = parentGrid[choices[Math.floor(Math.random() * choices.length)]-1];
+        }
+        return mate
+    }
+
+    function getOffspring(mom,dad){
+        var part1=trimString(mom[1]);
+        var par1=part1.split(',')
+        var r1=parseInt(par1[0]);
+        var g1=parseInt(par1[1]);
+        var b1=parseInt(par1[2]);
+        
+        var part2=trimString(dad[1]);
+        var par2=part2.split(',')
+        var r2=parseInt(par2[0]);
+        var g2=parseInt(par2[1]);
+        var b2=parseInt(par2[2]);
+
+        var r=(r1 + r2) * 0.5;
+        var g=(g1 + g2) * 0.5;
+        var b=(b1 + b2) * 0.5;
+
+        var offspring="rgb(" + r +"," + g +"," + b +")";
+
+        return offspring
+    }
+
+    function trimString(str){
+            var str=str.substring(3,str.length)//removes rgb
+            var str=str.replace('(','')
+            var str=str.replace(')','')
+            return str
+    }
+
+    function subsequentPop(){
+        if(typeof parentGrid=='undefined'){
+            alert("Create parental population first!")
+        }else{
+            track_Generation()
+        }
+        pixe=Math.sqrt((500*500)/numInds);
+        var canvas1 = document.getElementById('canvas');
+        if(canvas1.getContext){
+            var ctx1 = canvas1.getContext('2d');
+            var x=0;
+            var y=0;
+            var diamet = canvas1.width;
+        }
+        pnum=0
+        newParentGrid=[]
+        for(; y < diamet; y+=pixe) { // x/y grid
+                for(x = 0; x < diamet; x+=pixe) {
+                    ++pnum;
+                    moth=parentGrid[pnum-1]
+                    fath=choose_Mate(pnum)
+                    mut=mutation_occur()
+                    if(mut==true){
+                        pixCol=getRndColor()    
+                    }else{
+                        pixCol=getOffspring(moth,fath)    
+                    }
+                    ctx1.fillStyle=pixCol; // nonRandom color setting by user input
+                    ctx1.fillRect(x, y, pixe, pixe);
+                    //ctx1.beginPath();
+                    //ctx1.arc(x, y, pixe/2, 0, 2 * Math.PI);
+                    //ctx1.stroke();
+                    newParentGrid.push([pnum,pixCol])
+                }
+                }
+        globalThis.parentGrid=newParentGrid
+        plot1(parentGrid)
+    } 
+
+    //Mutation
+    function mutation_occur(){
+        var mut = parseInt(document.getElementById('mutant').value);
+        var nomut = 1000-mut;
+        var occur=[[true,mut],[false,nomut]];
+
+        var total = 1000
+        var threshold = Math.random() * total;
+        total = 0;
+        for (let i = 0; i < 1; ++i){
+            total += occur[i][1];
+            if (total >= threshold){
+                return occur[i][0];
+            }
+        }    
+        return occur[1][0];
+
+    }
+
+    //PLOT
+    function plot1(parentGrid){
+        
+        globalThis.transformed=[]
+        for(i in parentGrid){
+            if(i==0){
+                transformed.push([parentGrid[i][1],1]);
+            }
+            else{
+                present=false
+                for(j in transformed){
+                    if(parentGrid[i][1]==transformed[j][0]){
+                        present=true;
+                        break
+                    }
+                }
+                if(present==true){
+                    ++transformed[j][1];
+                }else{
+                    transformed.push([parentGrid[i][1],1]);
+                }
+                
+            }
+        }        
+        var xArray = [];
+        var yArray = [];
+        for(let i = 0; i < transformed.length; ++i){
+            xArray.push(transformed[i][0])            
+            yArray.push(transformed[i][1])
+        }       
+        console.log(parentGrid)
+        console.log(transformed)
+        console.log(xArray)
+        console.log(initPar)
+        var pare1=initPar[0][0]
+        var pare2=initPar[1][0]
+        console.log(pare1)
+        console.log(pare2)
+        var nxArray=[]
+        hybridNum=0
+        for(c in xArray){
+            if(xArray[c]==pare1){
+                nxArray.push("Parent1");
+            }else if(xArray[c]==pare2){
+                nxArray.push("Parent2");
+            }else{
+                hybridNum++
+                nxArray.push("Offspring "+hybridNum);
+            }
+        }
+        var colors=xArray
+        var xArray=nxArray
+        console.log(xArray)
+        console.log(colors)
+
+
+        var dataaa = [{
+        type: "bar",
+        x: xArray,
+        y: yArray,
+        marker:{
+        color: colors},
+        transforms: [{
+            type:'sort',
+            target:'y',
+            order:'descending'
+        }]
+        }];
+        var layout = {title:"Phenotypic Frequency"};
+
+        Plotly.newPlot("myPlot", dataaa, layout);
+    }
+    
+
+    </script>
+</head>
+<body onload="parentPop()">
+<center>
+    <div class="title">
+        <!--Title: tentative title-->
+        <h1>Phenotype changes through Homoploid hybridization</h1>
+    </div>
+    <!--Canvas size; currently fixed to 500x500
+    perhaps better to reduce the pixel size to show more individuals 
+    instead of enlarging canvas since it can take lots of memory 
+    when the canvas is large thus slower, or even freeze/crash 
+    (reference, me==(may be wrong))-->
+    <input type = "button"  onclick="subsequentPop()" value="Next Generation"><br>
+    <input type = "button" onclick="window.location.reload()" value="Reset"><br>
+    <div>
+        <canvas id="canvas" width="500" height="500"></canvas><br>
+    </div>
+    <div>
+        Suppose above (big) square represents a population composed of individuals (small squares)
+        of two species each of which has distinct phenotype, in this case black and white color.<br>
+        This widget aims to show how phenotype changes over time if hybridization between the two
+        species occurs over multiple generations.
+
+        Louisiana iris
+    </div>   
+
+    <div id="myPlot"></div>
+
+
+    <h4>Set parent population</h4>
+    Below range determines the (approximate) % of each species in a population (50:50 default).<br>
+    Select % for species 1 and the proportion for species will be determined automatically. <br>
+    Changing parental frequency will restart generation.<br> 
+    Refreshing parental frequency will make a new population distribution given the frequency.<br> 
+    Reset parental frequency will put % back to default (50:50).<br> 
+    Species 1: <input type="range" id="p1" value="50" min="0" max="100" step=1 onchange="parentPop()"><input type="text" id="textInput" value=""><br>
+    Species 2: <input type="range" id="p2" value="50" min="0" max="100" step=1><input type="text" id="textInput2" value="100-above number"><br>
+    <input type = "button" onclick="parentPop()" value="Refresh">
+    <input type = "button" onclick="window.location.reload()" value="Reset">
+
+
+
+    <h4>Miscellaneous parameters</h4>
+    Population size: <input type="number" min="25" max="10000" value="900" step=100 id="nind"">    <input type = "button" onclick="parentPop()" value="Set">
+    <br>
+    (Approximate, we may have to round the selected population size to the nearest number that will fill in the canvas)<br>
+    Briefly, we recommend the following population number to visualize in different scales:<br>
+    Tiny population: 25<br>
+    Small population: 100<br>
+    Medium population: 900 (default)<br>
+    Large population: 2500<br>
+    Huge population: 10000<br>
+    <!--Using LSU Color Code: RGB: (70, 29, 124); RGB: (253, 208, 35)-->
+    Species 1 R: <input type="number" min="0" max="255" value="0" step=1 id="p1R"">
+    G:           <input type="number" min="0" max="255" value="29" step=1 id="p1G"">
+    B:           <input type="number" min="0" max="255" value="124" step=1 id="p1B""><br>
+    Species 2 R: <input type="number" min="0" max="255" value="0" step=1 id="p2R"">
+    G:           <input type="number" min="0" max="255" value="208" step=1 id="p2G"">
+    B:           <input type="number" min="0" max="255" value="35" step=1 id="p2B""><br>
+    Extraordinary mutation (1/1000) [max=0.1%]: <input type="number" min="0" max="10" value="1" step=1 id="mutant""><br>
+
+    
+    <h4>Next generation and reset</h4>
+    Generation count: <input type="text" id="gen" value="0" size="5"></input> <br>
+    <input type = "button"  onclick="subsequentPop()" value="Next Generation"><br><br>
+    <!--input type = "button"  onclick="window.location.reload()" value="RESET"-->
+
+
+    May be write some explanations from Anderson (1952)'s Introgressive hybridization how the allele frequency changes over generations,<br>
+    this probably would be helpful interpreting the below plot and link the widget with theoretical foundations.<br>
+
+    May be talk about additivity -- Solis and Soltis<br>
+
+    May be talk about mutation and genetic diversity<br>
+
+    https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2283-2
+
+</center>
+</body>
+</html>

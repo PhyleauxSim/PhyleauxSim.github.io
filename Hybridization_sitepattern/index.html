@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="sampling/discrete.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+        
+        
+        //INPUT CONTROL
+
+
+        function setMax(){
+            var tempt1 = document.getElementById("t1");
+            document.getElementById('t1show').value=parseFloat(document.getElementById("t1").value); 
+            var tempt2 = document.getElementById("t2");
+            document.getElementById('t2show').value=parseFloat(document.getElementById("t2").value); 
+            var maxValue1 = document.getElementById("t3").value;
+            tempt1.setAttribute("max",maxValue1); // set a new value;
+            tempt2.setAttribute("max",maxValue1); // set a new value;
+            var tempt3 = document.getElementById("t3");
+            document.getElementById('t3show').value=parseFloat(document.getElementById("t3").value); 
+            var maxValue2 = document.getElementById("t4").value;
+            document.getElementById('t4show').value=parseFloat(document.getElementById("t4").value); 
+            tempt3.setAttribute("max",maxValue2); // set a new value;
+
+            document.getElementById('gammashow').value=parseFloat(document.getElementById("gamma").value); 
+            document.getElementById('gammashow1').value=parseFloat(document.getElementById("gamma").value); 
+
+            document.getElementById('thetashow').value=parseFloat(document.getElementById("theta").value); 
+            document.getElementById('bpshow').value=parseFloat(document.getElementById("bp").value); 
+        }
+
+        //
+
+        function squareof(num){
+           return num ** 2
+        }
+
+        function GetTrueProbsAsymm(myt1,myt2,myt3,theta,alpha){
+
+
+            t1 = myt1*theta
+            t2 = myt2*theta  
+            t3 = myt3*theta
+            t = 2*theta
+            m = alpha 
+
+            var cmat=[]
+            var cmat1=[]
+            cmat1[0]=1/256
+            cmat1[1] = 3/((256)*(1+m*t))
+            cmat1[2] = 6/(256*(1+m*t))
+            cmat1[3] = 12/(256*(1+m*t)*(2+m*t))
+            cmat1[4] = 9/(256*(1+m*t))
+            cmat1[5] = 12/(256*(1+m*t)*(2+m*t))
+            cmat1[6] = 9/(256*squareof((1+m*t)))
+            cmat1[7] = 24/(256*(1+m*t)*(2+m*t))
+            cmat1[8] = 48/(256*(1+m*t)*squareof((2+m*t)))
+            cmat1[9] =(6*m*t*(4+m*t)*(4+3*m*t))/(256*(squareof((1+m*t)))*(squareof((2+m*t)))*(3+m*t))
+
+            var cmat2=[]                    
+            cmat2[0] = 1/256
+            cmat2[1] = -1/(256*(1+m*t))
+            cmat2[2] = 2/(256*(1+m*t))
+            cmat2[3] = -4/(256*(1+m*t)*(2+m*t))
+            cmat2[4] = 5/(256*(1+m*t))
+            cmat2[5] = -4/(256*(1+m*t)*(2+m*t))
+            cmat2[6] = -3/(256*squareof((1+m*t)))
+            cmat2[7] = 8/(256*(1+m*t)*(2+m*t))
+            cmat2[8] = -16/(256*(1+m*t)*squareof((2+m*t)))
+            cmat2[9] = -(2*m*t*(4+m*t)*(4+3*m*t))/(256*(squareof((1+m*t)))*(squareof((2+m*t)))*(3+m*t))
+
+            var cmat3=[]
+            cmat3[0] = 1/256
+            cmat3[1] = 3/(256*(1+m*t))
+            cmat3[2] = -2/(256*(1+m*t))
+            cmat3[3] = -4/(256*(1+m*t)*(2+m*t))
+            cmat3[4] = 5/(256*(1+m*t))
+            cmat3[5] = 12/(256*(1+m*t)*(2+m*t))
+            cmat3[6] = -3/(256*squareof((1+m*t)))
+            cmat3[7] = -8/(256*(1+m*t)*(2+m*t))
+            cmat3[8] = -16/(256*(1+m*t)*squareof((2+m*t)))
+            cmat3[9] = -(2*m*t*(4+m*t)*(4+3*m*t))/(256*(squareof((1+m*t)))*(squareof((2+m*t)))*(3+m*t))
+            
+            var cmat4=[]
+            cmat4[0] = 1/256
+            cmat4[1] = 3/(256*(1+m*t))
+            cmat4[2] = 6/(256*(1+m*t))
+            cmat4[3] = 12/(256*(1+m*t)*(2+m*t))
+            cmat4[4] = -3/(256*(1+m*t))
+            cmat4[5] = -4/(256*(1+m*t)*(2+m*t))
+            cmat4[6] = -3/(256*squareof((1+m*t)))
+            cmat4[7] = -8/(256*(1+m*t)*(2+m*t))
+            cmat4[8] = -16/(256*(1+m*t)*squareof((2+m*t)))
+            cmat4[9] = -(2*m*t*(4+m*t)*(4+3*m*t))/(256*(squareof((1+m*t)))*(squareof((2+m*t)))*(3+m*t))
+
+            var cmat5=[]
+            cmat5[0] = 1/256
+            cmat5[1] = 3/((256)*(1+m*t))
+            cmat5[2] = -2/((256)*(1+m*t))
+            cmat5[3] = -4/((256)*(1+m*t)*(2+m*t))
+            cmat5[4] = 1/((256)*(1+m*t))
+            cmat5[5] = -4/((256)*(1+m*t)*(2+m*t))
+            cmat5[6] = 9/((256)*squareof((1+m*t)))
+            cmat5[7] = -8/((256)*(1+m*t)*(2+m*t))
+            cmat5[8] = -16/((256)*(1+m*t)*squareof((2+m*t)))
+            cmat5[9] = (2*m*t*squareof((4+m*t)))/((256)*(squareof((1+m*t)))*(squareof((2+m*t)))*(3+m*t))
+
+            var cmat6=[]
+            cmat6[0] = 1/256
+            cmat6[1] = -1/((256)*(1+m*t))
+            cmat6[2] = 2/((256)*(1+m*t))
+            cmat6[3] = -4/((256)*(1+m*t)*(2+m*t))
+            cmat6[4] = 1/((256)*(1+m*t))
+            cmat6[5] = -4/((256)*(1+m*t)*(2+m*t))
+            cmat6[6] = 1/((256)*squareof((1+m*t)))
+            cmat6[7] = -8/((256)*(1+m*t)*(2+m*t))
+            cmat6[8] = 16/((256)*(1+m*t)*squareof((2+m*t)))
+            cmat6[9] = m*t*(2*16+40*m*t+(10)*(squareof(m))*(squareof(t)))/((256)*(squareof((1+m*t)))*(squareof((2+m*t)))*(3+m*t))
+
+            var cmat7=[]
+            cmat7[0] = 1/256
+            cmat7[1] = -1/((256)*(1+m*t))
+            cmat7[2] = -2/((256)*(1+m*t))
+            cmat7[3] = 4/((256)*(1+m*t)*(2+m*t))
+            cmat7[4] = 1/((256)*(1+m*t))
+            cmat7[5] = 4/((256)*(1+m*t)*(2+m*t))
+            cmat7[6] = -3/((256)*squareof((1+m*t)))
+            cmat7[7] = -8/((256)*(1+m*t)*(2+m*t))
+            cmat7[8] = 16/((256)*(1+m*t)*squareof((2+m*t)))
+            cmat7[9] = 2*(squareof(m))*(squareof(t))*(4+m*t)/((256)*(squareof((1+m*t)))*(squareof((2+m*t)))*(3+m*t))
+
+            var cmat8=[]
+            cmat8[0] = 1/256
+            cmat8[1] = 3/((256)*(1+m*t))
+            cmat8[2] = -2/((256)*(1+m*t))
+            cmat8[3] = -4/((256)*(1+m*t)*(2+m*t))
+            cmat8[4] = -3/((256)*(1+m*t))
+            cmat8[5] = -4/((256)*(1+m*t)*(2+m*t))
+            cmat8[6] = -3/((256)*squareof((1+m*t)))
+            cmat8[7] = 8/((256)*(1+m*t)*(2+m*t))
+            cmat8[8] = 16/((256)*(1+m*t)*squareof((2+m*t)))
+            cmat8[9] = 2*(squareof(m))*(squareof(t))*(4+m*t)/((256)*(squareof((1+m*t)))*(squareof((2+m*t)))*(3+m*t))
+            
+            var cmat9=[]
+            cmat9[0] = 1/256
+            cmat9[1] = -1/((256)*(1+m*t))
+            cmat9[2] = -2/((256)*(1+m*t))
+            cmat9[3] = 4/((256)*(1+m*t)*(2+m*t))
+            cmat9[4] = 1/((256)*(1+m*t))
+            cmat9[5] = -4/((256)*(1+m*t)*(2+m*t))
+            cmat9[6] = 1/((256)*squareof((1+m*t)))
+            cmat9[7] = 0
+            cmat9[8] = 0
+            cmat9[9] = -(squareof(m))*(squareof(t))*(4+2*m*t)/((256)*(squareof((1+m*t)))*(squareof((2+m*t)))*(3+m*t))
+            
+            var cmat10=[]
+            cmat10[0] = 1/256
+            cmat10[1] = -1/((256)*(1+m*t))
+            cmat10[2] = 2/((256)*(1+m*t))
+            cmat10[3] = -4/((256)*(1+m*t)*(2+m*t))
+            cmat10[4] = -3/((256)*(1+m*t))
+            cmat10[5] = 4/((256)*(1+m*t)*(2+m*t))
+            cmat10[6] = 1/((256)*squareof((1+m*t)))
+            cmat10[7] = 0
+            cmat10[8] = 0
+            cmat10[9] = -(squareof(m))*(squareof(t))*(4+2*m*t)/((256)*(squareof((1+m*t)))*(squareof((2+m*t)))*(3+m*t))
+            
+            var cmat11=[]
+            cmat11[0] = 1/256
+            cmat11[1] = -1/((256)*(1+m*t))
+            cmat11[2] = -2/((256)*(1+m*t))
+            cmat11[3] = 4/((256)*(1+m*t)*(2+m*t))
+            cmat11[4] = -3/((256)*(1+m*t))
+            cmat11[5] = 4/((256)*(1+m*t)*(2+m*t))
+            cmat11[6] = 1/((256)*squareof((1+m*t)))
+            cmat11[7] = 8/((256)*(1+m*t)*(2+m*t))
+            cmat11[8] = -16/((256)*(1+m*t)*squareof((2+m*t)))
+            cmat11[9] = 2*(squareof(m)*m)*(squareof(t)*t)/((256)*(squareof((1+m*t)))*(squareof((2+m*t)))*(3+m*t))
+
+            var cmat=[cmat1,cmat2,cmat3,cmat4,cmat5,cmat6,cmat7,cmat8,cmat9,cmat10,cmat11]
+
+            beta = []
+            beta[0]=1
+            beta[1]=Math.exp(-2*m*t1)
+            beta[2]=Math.exp(-2*m*t2)
+            beta[3]=Math.exp(-m*t1)*Math.exp(-2*m*t2)
+            beta[4]=Math.exp(-2*m*t3)
+            beta[5]=Math.exp(-m*t1)*Math.exp(-2*m*t3)
+            beta[6]=Math.exp(-2*m*t1)*Math.exp(-2*m*t3)
+            beta[7]=Math.exp(-m*t2)*Math.exp(-2*m*t3)
+            beta[8]=Math.exp(-m*t1)*Math.exp(-m*t2)*Math.exp(-2*m*t3)
+            beta[9]=Math.exp((2/t)*(t1-t2))*Math.exp(-2*m*(t2+t3))
+
+            m1=cmat
+            m2=beta
+
+            //Thanks to https://www.ma-no.org/en/programming/javascript/how-to-multiply-matrices-in-javascript for multiplyting matrices
+            fil_m1 = m1.length;  
+            col_m1 = m1[0].length;    
+            fil_m2 = m2.length;  
+            col_m2 = 1
+            
+            let multiplication = [0,0,0,0,0,0,0,0,0,0,0]
+            for (x=0; x < multiplication.length; x++) {      
+                for (z=0; z<col_m1; z++) {   
+                            multiplication[x] = multiplication[x] + m1[x][z]*m2[z]; 
+                    }      
+                }
+
+                p1=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+                p1[0]=multiplication[0]
+                p1[1]=multiplication[1]
+                p1[2]=multiplication[1]
+                p1[3]=multiplication[4]
+                p1[4]=multiplication[6]
+                p1[5]=multiplication[2]
+                p1[6]=multiplication[5]
+                p1[7]=multiplication[8]
+                p1[8]=multiplication[5]
+                p1[9]=multiplication[3]
+                p1[10]=multiplication[9]
+                p1[11]=multiplication[8]
+                p1[12]=multiplication[9]
+                p1[13]=multiplication[7]
+                p1[14]=multiplication[10]
+
+                
+
+                return p1
+
+        }
+
+        function simspcounts(){
+            setMax()
+
+            var myt1=parseFloat(document.getElementById("t1").value);
+            var myt2=parseFloat(document.getElementById("t2").value);
+            var myt3=parseFloat(document.getElementById("t3").value);
+            var myt4=parseFloat(document.getElementById("t4").value);
+            var gamma=parseFloat(document.getElementById("gamma").value);
+            var theta=parseFloat(document.getElementById("theta").value);
+            var alpha=4/3
+            
+            pt1=GetTrueProbsAsymm(myt1,myt3,myt4,theta,alpha)
+            pt2=GetTrueProbsAsymm(myt2,myt3,myt4,theta,alpha)
+            //console.log(pt1)
+            //console.log(pt2)
+
+            var rea1=[1,6,3,9,12,2,7,8,4,10,14,5,13,11,15]
+            var rea2=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+            var networkp=[]
+            for(i=0; i<14; i++){
+                networkp[i]=(pt1[rea1[i]-1]*gamma)+(pt2[rea2[i]-1]*(1-gamma))
+            }
+            //console.log(networkp)
+
+            
+            var weight=[4,12,12,12,24,12,12,24,12,12,24,24,24,24,24]
+            var weighted=[]
+            for(i=0; i<14; i++){
+                weighted[i]=networkp[i]*weight[i]
+            }
+            //console.log(weighted)
+            var seqlen=parseFloat(document.getElementById("bp").value);
+            var mult = SJS.Multinomial(seqlen, weighted);
+            var simsp=mult.draw();
+            console.log(simsp)
+            document.getElementById('abba').value=simsp[8]
+            document.getElementById('baba').value=simsp[6]
+
+            
+
+            plot1(simsp)
+            HyDe(simsp)
+            Dstat(simsp)
+            return simsp
+}
+
+//PLOT
+function plot1(simsp){
+        
+        var xArray = ["xxxx","xxxy","xxyx","xxyy","xxyz","xyxx","xyxy","xyxz","xyyx","yxxx","xyyz","zxyz","yxzx","yzxx","xyzw"];
+        var yArray = simsp
+
+        max1=0
+        max2=0
+        for(i in simsp){
+            if(simsp[i]>max2){
+                max2=simsp[i]
+                if(max2>max1){
+                    tempmax1=max1
+                    tempmax2=max2
+                    max1=tempmax2
+                    max2=tempmax1
+                }
+            }
+        }
+        console.log(max1,max2)
+
+        var dataaa = [{
+        type: "bar",
+        x: xArray,
+        y: yArray,
+        }];
+        var layout = {title:"Phenotypic Frequency",
+        yaxis: {
+            autorange: false,
+            range: [0, max2+100],
+            type: 'linear',
+            'visible': false
+            }
+    };
+
+        Plotly.newPlot("myPlot", dataaa, layout);
+    }
+        
+
+//HyDe
+function HyDe(simsp){
+    var num_obs=parseFloat(document.getElementById("bp").value);
+    var avg_obs=num_obs
+    var p9 = (simsp[9-1]+0.05)/num_obs
+    var p7 = (simsp[7-1]+0.05)/num_obs
+    var p4 = (simsp[4-1]+0.05)/num_obs
+
+    var _c_num   = avg_obs * (p9 - p7)
+    var _c_denom = avg_obs * (p4 - p7)
+    var _c       = _c_num / _c_denom
+    var gamma = _c / (1 + _c)
+    document.getElementById('compgamma').value=gamma
+
+return(gamma)
+}
+
+//D-stat
+function Dstat(simsp){
+    ABAB=simsp[6]
+    ABBA=simsp[8]
+    d=(ABBA-ABAB)/(ABBA+ABAB)
+    z=d/(2*Math.sqrt((0.25/(ABBA+ABAB))))
+    document.getElementById('Dval').value=d
+    document.getElementById('Zval').value=z
+
+    return d,z
+    
+    //pv=1-cdf(ndist,z)
+}
+
+        
+    </script>
+</head>
+<body onload="simspcounts()">
+    <center>
+    <div class="title">
+        <!--Title: tentative title-->
+        <h1>Quartet site pattern frequency under Hybridization</h1>
+    </div>
+
+    <img src="model.png" alt="Blischak2018" style="width:800px;"><br>
+
+    Tau 4: <input type="range" id="t4" value="5" min="0" max="100" step=0.1 onchange="simspcounts()"><input type="text" id="t4show" value=""><br>
+    Tau 3: <input type="range" id="t3" value="3" min="0" max="100" step=0.1 onchange="simspcounts()"><input type="text" id="t3show" value=""><br>
+    Tau 2: <input type="range" id="t2" value="1.5" min="0" max="100" step=0.1 onchange="simspcounts()"><input type="text" id="t2show" value=""><br>
+    Tau 1: <input type="range" id="t1" value="1.5" min="0" max="100" step=0.1 onchange="simspcounts()"><input type="text" id="t1show" value=""><br>
+    
+    Gamma: <input type="range" id="gamma" value="0.5" min="0" max="1.0" step=0.01 onchange="simspcounts()"><input type="text" id="gammashow" value=""><br>
+
+    Theta: <input type="range" id="theta" value="0.005" min="0.00001" max="0.1" step=0.00001 onchange="simspcounts()"><input type="text" id="thetashow" value=""><br>
+    Sequence Length: <input type="range" id="bp" value="10000" min="1000" max="10000000" step=1 onchange="simspcounts()"><input type="text" id="bpshow" value=""><br>
+    <input type = "button" onclick="simspcounts()" value="GetTrueProbsNet">
+
+    <h4>Estimate inheritance parameter using xxyy, xyxy, and xyyx; the computed gamma=<input type="text" id="compgamma" value=""> 
+        when true gamma=<input type="text" id="gammashow1" value=""></h4>
+
+    <h4>Detect Introgression using the D-stat: </h4>
+    To understand the rationale behind this test we first have to delve into the D-statistic, 
+    also known as the ABBA-BABA-test. This approach was developed to quantify the amount of genetic
+     exchange between Neanderthals and modern humans. The rationale behind this test is quite 
+     straightforward: it considers ancestral (A) and derived (B) alleles across the genomes 
+     of four taxa. Under the scenario without introgression, two particular allelic patterns 
+     ABBA and BABA should occur equally frequent. An excess of either ABBA or BABA, 
+     resulting in a D-statistic that is significantly different from zero, is indicative of 
+     gene flow between two taxa. A positive D-statistic (i.e. an excess of ABBA) points to 
+     introgression between P2 and P3, whereas a negative D-statistic (i.e. an excess of BABA) 
+     points to introgression between P1 and P3.
+     <br><br>
+    A Z-score can be calculated to assess the significance of the D-statistic. I will not explain 
+    the mathematical underpinnings of the Z-score. All you need to know, is that a Z-score bigger 
+    than 3 or smaller than -3 can be interpreted as a significant result. Interested readers can 
+    check Durand et al. (2011) for more information.
+    <br>
+    D-stat can detect introgression when 0< gamma< 0.5.
+    <br>
+    xyyx: <input type="text" id="abba" value=""><br>
+    xyxy: <input type="text" id="baba" value=""><br>
+    D-stat value: <input type="text" id="Dval" value=""><br>
+    Z-score value: <input type="text" id="Zval" value=""> <br>
+    
+    <div id="myPlot"></div>
+    Warning : y-axis maximum is set to the second largest number + 100. xxxx is the most likely
+    to be the largest. So xxxx bar is not scaled with respect to the rest of the bars.
+</center>
+
+</body>
+</html>
