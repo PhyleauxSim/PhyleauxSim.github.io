@@ -250,22 +250,21 @@
             var rea1=[1,6,3,9,12,2,7,8,4,10,14,5,13,11,15]
             var rea2=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
             var networkp=[]
-            for(i=0; i<14; i++){
+            for(i=0; i<15; i++){
                 networkp[i]=(pt1[rea1[i]-1]*gamma)+(pt2[rea2[i]-1]*(1-gamma))
             }
-            //console.log(networkp)
+            console.log(networkp)
 
             
             var weight=[4,12,12,12,24,12,12,24,12,12,24,24,24,24,24]
             var weighted=[]
-            for(i=0; i<14; i++){
+            for(i=0; i<15; i++){
                 weighted[i]=networkp[i]*weight[i]
             }
-            //console.log(weighted)
             var seqlen=parseFloat(document.getElementById("bp").value);
             var mult = SJS.Multinomial(seqlen, weighted);
             var simsp=mult.draw();
-            console.log(simsp)
+            //console.log(simsp)
             document.getElementById('abba').value=simsp[8]
             document.getElementById('baba').value=simsp[6]
 
@@ -303,7 +302,7 @@ function plot1(simsp){
         x: xArray,
         y: yArray,
         }];
-        var layout = {title:"Phenotypic Frequency",
+        var layout = {title:"Quartet site pattern frequency",
         yaxis: {
             autorange: false,
             range: [0, max2+100],
@@ -347,6 +346,22 @@ function Dstat(simsp){
     //pv=1-cdf(ndist,z)
 }
 
+//D-stat
+function Dstatcal(abbacal,babacal){
+    ABAB=document.getElementById('babacal').value
+    ABBA=document.getElementById('abbacal').value
+    d=(ABBA-ABAB)/(ABBA+ABAB)
+    z=d/(2*Math.sqrt((0.25/(ABBA+ABAB))))
+    console.log(d)
+    console.log(z)
+    document.getElementById('Dvalcal').value=d
+    document.getElementById('Zvalcal').value=z
+
+    return d,z
+    
+    //pv=1-cdf(ndist,z)
+}
+
         
     </script>
 </head>
@@ -357,8 +372,18 @@ function Dstat(simsp){
         <h1>Quartet site pattern frequency under Hybridization</h1>
     </div>
 
-    <img src="model.png" alt="Blischak2018" style="width:800px;"><br>
-
+    <img src="modelnetwork.png" alt="" style="width:400px;"><br>
+    <br>
+    A model phylogenetic network with a parameter set Tau 1, Tau 2, Tau 3, Tau 4 and gamma.<br>
+    Tau 4 represents the speciation time from the root,<br>
+    Tau 3 represents the speciation time from the first internal node from the root,<br>
+    and Tau 1 and Tau 2 represents the speciation time from the internal nodes that are the ancestor 
+    species of the present day species/populations P1 and P2, respectively. It is that ancestral population 
+    at the time of Tau 1 and Tau 2 that hybridize and give rise to the hybrid species H.
+    <br>
+    Below range bars adjust 
+    
+    <br>
     Tau 4: <input type="range" id="t4" value="5" min="0" max="100" step=0.1 onchange="simspcounts()"><input type="text" id="t4show" value=""><br>
     Tau 3: <input type="range" id="t3" value="3" min="0" max="100" step=0.1 onchange="simspcounts()"><input type="text" id="t3show" value=""><br>
     Tau 2: <input type="range" id="t2" value="1.5" min="0" max="100" step=0.1 onchange="simspcounts()"><input type="text" id="t2show" value=""><br>
@@ -369,26 +394,29 @@ function Dstat(simsp){
     Theta: <input type="range" id="theta" value="0.005" min="0.00001" max="0.1" step=0.00001 onchange="simspcounts()"><input type="text" id="thetashow" value=""><br>
     Sequence Length: <input type="range" id="bp" value="10000" min="1000" max="10000000" step=1 onchange="simspcounts()"><input type="text" id="bpshow" value=""><br>
     <input type = "button" onclick="simspcounts()" value="GetTrueProbsNet">
+    
+    <div id="myPlot"></div>
+    Warning : y-axis maximum is set to the second largest number + 100. xxxx is the most likely
+    to be the largest. So xxxx bar is not scaled with respect to the rest of the bars.
 
     <h4>Estimate inheritance parameter using xxyy, xyxy, and xyyx; the computed gamma=<input type="text" id="compgamma" value=""> 
         when true gamma=<input type="text" id="gammashow1" value=""></h4>
 
-    <h4>Detect Introgression using the D-stat: </h4>
-    To understand the rationale behind this test we first have to delve into the D-statistic, 
-    also known as the ABBA-BABA-test. This approach was developed to quantify the amount of genetic
-     exchange between Neanderthals and modern humans. The rationale behind this test is quite 
-     straightforward: it considers ancestral (A) and derived (B) alleles across the genomes 
-     of four taxa. Under the scenario without introgression, two particular allelic patterns 
-     ABBA and BABA should occur equally frequent. An excess of either ABBA or BABA, 
-     resulting in a D-statistic that is significantly different from zero, is indicative of 
-     gene flow between two taxa. A positive D-statistic (i.e. an excess of ABBA) points to 
-     introgression between P2 and P3, whereas a negative D-statistic (i.e. an excess of BABA) 
-     points to introgression between P1 and P3.
-     <br><br>
-    A Z-score can be calculated to assess the significance of the D-statistic. I will not explain 
-    the mathematical underpinnings of the Z-score. All you need to know, is that a Z-score bigger 
-    than 3 or smaller than -3 can be interpreted as a significant result. Interested readers can 
-    check Durand et al. (2011) for more information.
+        
+
+    <h4>Detect Introgression using the D-statistic: </h4>
+
+        The D-statiscic (or also popularly referred to as the ABBA-BABA test) was originally developed to detect gene flow (or introgression) between 
+        Neanderthals and present day humans. Site pattern refers to the pattern of nucleotide assignment at the tips of a topology, 
+        and on a quartet (a tree with four tips), there are 256 possible site patterns that can be generalized into 15 patterns. These 15 patterns
+        are shown on the bar graph below where x,y,z, and w can be any one of nucleotide states (A,C,T,G) as long as they are different from each other.
+        Among these, the D-statistic utilizes the number of times patterns xyxy and xyyx appears throughout the genome of the four taxa in consideration,
+        where we consider x as ancestral and y as derived.
+        <br>
+        If the four taxa did not experience gene flow or introgression, the patterns xyyx and xyxy should occur in similar frequency. However, if these 
+        taxa experienced those processes at some time during their evolutionary history, the two patterns should appear in significantly different frequency.
+        We compute Z-score to assess the significance and we interpret Z-score > 3 or < -3 as significant. See Durant et al. (2011) for more information.
+
     <br>
     D-stat can detect introgression when 0< gamma< 0.5.
     <br>
@@ -396,10 +424,15 @@ function Dstat(simsp){
     xyxy: <input type="text" id="baba" value=""><br>
     D-stat value: <input type="text" id="Dval" value=""><br>
     Z-score value: <input type="text" id="Zval" value=""> <br>
-    
-    <div id="myPlot"></div>
-    Warning : y-axis maximum is set to the second largest number + 100. xxxx is the most likely
-    to be the largest. So xxxx bar is not scaled with respect to the rest of the bars.
+
+    <br>
+    <h4>The D-statistic Calculator</h4>
+
+    xyyx: <input type="text" id="abbacal" value="" min="0" max="10000000000" step=1><br>
+    xyxy: <input type="text" id="babacal" value="" min="0" max="10000000000" step=1><br>
+    <input type = "button" onclick="Dstatcal()" value="Calculate D-stat!"><br>
+    D-stat value: <input type="text" id="Dvalcal" value=""><br>
+    Z-score value: <input type="text" id="Zvalcal" value=""> <br>
 </center>
 
 </body>
