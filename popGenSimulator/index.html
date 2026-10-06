@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Drift and Selection Simulator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <h1>Drift and Selection Simulator</h1>
+    <p>Simulates genetic drift and natural selection at one locus with two alleles (A and a)
+      in replicate diploid populations.</p>
+
+    <form id="controls">
+      <fieldset>
+        <legend>Population</legend>
+        <label>Population size, n (gene copies)
+          <input id="n" type="number" min="1" step="1" value="100">
+        </label>
+        <label>Generations, z
+          <input id="z" type="number" min="1" step="1" value="50">
+        </label>
+        <label>Starting frequency of A, p₀
+          <input id="p0" type="number" min="0" max="1" step="0.01" value="0.5">
+        </label>
+        <label>Replicate populations
+          <input id="reps" type="number" min="1" step="1" value="50">
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Relative fitnesses</legend>
+        <label><span>w<sub>AA</sub></span>
+          <input id="wAA" type="number" min="0" step="0.01" value="1.06">
+        </label>
+        <label><span>w<sub>Aa</sub></span>
+          <input id="wAa" type="number" min="0" step="0.01" value="1.03">
+        </label>
+        <label><span>w<sub>aa</sub></span>
+          <input id="waa" type="number" min="0" step="0.01" value="1.0">
+        </label>
+      </fieldset>
+
+      <button type="submit">Run simulation</button>
+      <p id="error" role="alert"></p>
+    </form>
+
+    <div class="results">
+      <canvas id="plot" aria-label="Allele frequency trajectories"></canvas>
+      <aside id="summary">
+        <h2>At final generation</h2>
+        <div class="stat"><span id="fixedA">–</span> fixed for A</div>
+        <div class="stat"><span id="fixeda">–</span> fixed for a</div>
+        <div class="stat"><span id="poly">–</span> polymorphic</div>
+      </aside>
+    </div>
+  </main>
+  <script src="simulator.js"></script>
+</body>
+</html>
