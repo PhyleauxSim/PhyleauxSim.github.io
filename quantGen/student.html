@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Card Lab Student Station</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="student.css">
+</head>
+<body>
+<div class="page">
+  <header>
+    <p class="eyebrow">Evolution lab &middot; in-class exercise</p>
+    <h1>Card Lab Student Station</h1>
+    <p class="lede">Do your own part of the selection exercise here and swap cards with a real partner. Your instructor collects everyone&rsquo;s numbers to work out the class mean, variances, heritability and selection differential.</p>
+  </header>
+
+  <section class="settings" aria-label="Exercise settings">
+    <h3>Exercise settings (your instructor will announce these)</h3>
+    <div class="fields">
+      <label class="chk"><input id="cEnv" type="checkbox"> Random environmental effects</label>
+      <label class="f">Environment, lower bound<input id="cLo" type="number" step="1" min="-40" max="40"></label>
+      <label class="f">Environment, upper bound<input id="cHi" type="number" step="1" min="-40" max="40"></label>
+      <label class="chk"><input id="cDom" type="checkbox"> Dominance (black over red)</label>
+    </div>
+    <div class="fields">
+      <label class="f">Selection event
+        <select id="cSel">
+          <option value="gt">Removed if phenotype is above the cutoff</option>
+          <option value="lt">Removed if phenotype is below the cutoff</option>
+          <option value="coin">Coin flips (probabilistic)</option>
+        </select></label>
+      <label class="f">Cutoff phenotype<input id="cT" type="number" step="1"></label>
+    </div>
+    <div class="coderow">
+      <label class="f">Settings code (paste one from your instructor, or copy yours)<input id="cCode" type="text" spellcheck="false" autocomplete="off"></label>
+      <button class="btn ghost" id="applyCode" type="button">Apply code</button>
+      <button class="btn ghost" id="copyCode" type="button">Copy code</button>
+    </div>
+    <div class="row"><span class="small" id="cfgMsg"></span></div>
+  </section>
+
+  <main>
+    <section class="step" id="step1"><div class="rail">Step<b>1</b></div><div class="content" id="body1"></div></section>
+    <section class="step" id="step2"><div class="rail">Step<b>2</b></div><div class="content" id="body2"></div></section>
+    <section class="step" id="step3"><div class="rail">Step<b>3</b></div><div class="content" id="body3"></div></section>
+    <section class="step" id="step4"><div class="rail">Step<b>4</b></div><div class="content" id="body4"></div></section>
+  </main>
+
+  <section class="panel" id="record" hidden></section>
+
+  <div class="row"><button class="btn ghost" id="reset" type="button">Start over</button><span class="small">Your progress is saved in this browser, so a refresh will not lose your cards.</span></div>
+
+  <footer>Scoring: ace = 1, face cards = 12, all other cards = face value. Your cards come from a standard 52-card deck with no jokers. With dominance on, a black card paired with a red card counts twice the black card&rsquo;s value. Phenotype = genotype + environmental effect, an integer drawn uniformly between the bounds.</footer>
+</div>
+<script src="student.js"></script>
+</body>
+</html>
