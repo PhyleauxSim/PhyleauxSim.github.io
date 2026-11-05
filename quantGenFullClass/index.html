@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evolution Card Lab</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+  <header>
+    <p class="eyebrow">Evolution lab &middot; after Frey, Lively &amp; Brodie (2010)</p>
+    <h1>Selection and Evolution with a Deck of Cards</h1>
+    <p class="lede">You are one student in a class population. Draw your alleles, mate, face a selection event, and find out whether the class average changes the way the theory predicts: R = h&sup2;S. The rest of the class is simulated, using the same shuffled decks and the same rules as the classroom exercise.</p>
+  </header>
+
+  <section class="settings" aria-label="Class settings">
+    <div class="fields">
+      <label class="f">Class size (even)
+        <input id="cfgN" type="number" min="8" max="200" step="2" value="32"></label>
+      <label class="f">Selection event
+        <select id="cfgSel">
+          <option value="truncHigh">Remove the highest scores</option>
+          <option value="truncLow">Remove the lowest scores</option>
+          <option value="coin">Coin flips (probabilistic)</option>
+        </select></label>
+      <label class="f">Fraction removed (%)
+        <input id="cfgFrac" type="number" min="10" max="50" step="5" value="25"></label>
+    </div>
+    <div class="fields">
+      <label class="chk"><input id="cfgEnv" type="checkbox"> Random environmental effects</label>
+      <label class="f">Environment, lower bound
+        <input id="cfgLo" type="number" min="-40" max="40" step="1" value="-9"></label>
+      <label class="f">Environment, upper bound
+        <input id="cfgHi" type="number" min="-40" max="40" step="1" value="9"></label>
+      <label class="chk"><input id="cfgDom" type="checkbox"> Dominance (black over red)</label>
+    </div>
+    <div class="row">
+      <button class="btn" id="newClass" type="button">Start a new class</button>
+      <span class="small" id="envInfo"></span>
+    </div>
+  </section>
+
+  <main id="steps">
+    <section class="step" id="step1"><div class="rail">Step<b>1</b></div><div class="content" id="body1"></div></section>
+    <section class="step" id="step2"><div class="rail">Step<b>2</b></div><div class="content" id="body2"></div></section>
+    <section class="step" id="step3"><div class="rail">Step<b>3</b></div><div class="content" id="body3"></div></section>
+    <section class="step" id="step4"><div class="rail">Step<b>4</b></div><div class="content" id="body4"></div></section>
+  </main>
+
+  <footer>Scoring: ace = 1, face cards = 12, all other cards = face value. Cards are drawn without replacement from a shuffled shoe of two or more 52-card decks (no jokers), as in the article. Heritability is the slope of offspring phenotype on mid-parent phenotype. Selection differential S = mean after selection &minus; mean before. Response R = mean of the next generation &minus; mean of the generation before selection. Changing any setting and starting a new class resets the run.</footer>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
